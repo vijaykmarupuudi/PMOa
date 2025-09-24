@@ -27,8 +27,10 @@ const Templates = () => {
   const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
-    fetchTemplates();
-  }, [selectedType, selectedIndustry]);
+    if (token) {
+      fetchTemplates();
+    }
+  }, [selectedType, selectedIndustry, token]);
 
   const fetchTemplates = async () => {
     setLoading(true);
