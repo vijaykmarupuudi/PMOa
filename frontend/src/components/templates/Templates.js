@@ -53,7 +53,7 @@ const Templates = () => {
     setLoading(false);
   };
 
-  const useTemplate = async (templateId) => {
+  const handleUseTemplate = async (templateId) => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/templates/${templateId}/use`, {
         method: 'POST',
