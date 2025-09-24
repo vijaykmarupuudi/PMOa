@@ -262,8 +262,8 @@ export default function Sidebar({ open, setOpen }) {
       )}
 
       {/* Desktop sidebar */}
-      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
-        <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
+      <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 md:z-30">
+        <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white shadow-sm">
           <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
             <div className="flex items-center flex-shrink-0 px-4">
               <div className="h-8 w-8 rounded bg-blue-600 flex items-center justify-center">
@@ -289,17 +289,17 @@ export default function Sidebar({ open, setOpen }) {
           </div>
           
           <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
-            <div className="flex items-center">
-              <div className="h-9 w-9 rounded-full bg-blue-500 flex items-center justify-center">
+            <div className="flex items-center w-full">
+              <div className="h-9 w-9 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
                 <span className="text-white text-sm font-medium">
                   {user?.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U'}
                 </span>
               </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+              <div className="ml-3 min-w-0 flex-1">
+                <p className="text-sm font-medium text-gray-700 truncate">
                   {user?.full_name}
                 </p>
-                <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700 capitalize">
+                <p className="text-xs font-medium text-gray-500 capitalize truncate">
                   {user?.role?.replace('_', ' ')}
                 </p>
               </div>
