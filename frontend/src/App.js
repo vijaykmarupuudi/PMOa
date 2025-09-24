@@ -57,6 +57,7 @@ function AppContent() {
                 <Route path="/projects" element={<ProjectList />} />
                 <Route path="/projects/new" element={<CreateProject />} />
                 <Route path="/projects/:id" element={<ProjectDetail />} />
+                <Route path="/initiation/*" element={<Initiation />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </div>
