@@ -71,6 +71,84 @@ class UserBase(BaseModel):
     role: UserRole
     department: Optional[str] = None
 
+# PMO Module Models
+
+# Project Charter Model
+class ProjectCharterBase(BaseModel):
+    project_id: str
+    project_purpose: str
+    project_description: str
+    project_objectives: List[str] = []
+    success_criteria: List[str] = []
+    scope_inclusions: List[str] = []
+    scope_exclusions: List[str] = []
+    assumptions: List[str] = []
+    constraints: List[str] = []
+    estimated_budget: Optional[float] = 0.0
+    estimated_timeline: Optional[str] = None
+    key_milestones: List[Dict[str, Any]] = []
+    approved_by: Optional[str] = None
+    approval_date: Optional[datetime] = None
+
+class ProjectCharter(ProjectCharterBase):
+    id: str
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+    status: str = "draft"  # draft, approved, rejected
+
+# Business Case Model
+class BusinessCaseBase(BaseModel):
+    project_id: str
+    problem_statement: str
+    proposed_solution: str
+    business_need: str
+    expected_benefits: List[str] = []
+    cost_benefit_analysis: Dict[str, Any] = {}
+    risk_assessment: List[str] = []
+    alternatives_considered: List[str] = []
+    recommendation: str
+    return_on_investment: Optional[str] = None
+
+class BusinessCase(BusinessCaseBase):
+    id: str
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+    status: str = "draft"  # draft, approved, rejected
+
+# Stakeholder Register Model
+class StakeholderBase(BaseModel):
+    project_id: str
+    name: str
+    title: str
+    organization: str
+    contact_email: EmailStr
+    contact_phone: Optional[str] = None
+    role_in_project: str
+    influence_level: str = "medium"  # low, medium, high
+    interest_level: str = "medium"  # low, medium, high
+    communication_preference: str = "email"  # email, phone, meetings
+    expectations: List[str] = []
+    concerns: List[str] = []
+
+class Stakeholder(StakeholderBase):
+    id: str
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+
+# Project Setup Wizard Model
+class ProjectSetupWizardBase(BaseModel):
+    project_name: str
+    project_type: str = "standard"  # standard, agile, waterfall
+    industry: Optional[str] = None
+    complexity_level: str = "medium"  # low, medium, high
+    team_size: Optional[int] = None
+    duration_estimate: Optional[str] = None
+    budget_range: Optional[str] = None
+    methodology: str = "hybrid"  # agile, waterfall, hybrid
+
 class UserCreate(UserBase):
     password: str
 
