@@ -72,25 +72,37 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       setLoading(true);
+      console.log('🔑 Attempting login with:', credentials.email);
+      console.log('🌐 Backend URL:', API_URL);
+      
       const formData = new FormData();
       formData.append('username', credentials.email);
       formData.append('password', credentials.password);
 
+      console.log('📤 Making login request to:', `${API_URL}/api/auth/login`);
+      
       const response = await axios.post('/api/auth/login', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
+      console.log('📥 Login response received:', response.status);
+      
       const { access_token, user: userData } = response.data;
       
       localStorage.setItem('token', access_token);
       setToken(access_token);
       setUser(userData);
       
+      console.log('✅ Login successful for:', userData.full_name);
       toast.success(`Welcome back, ${userData.full_name}!`);
       return { success: true };
     } catch (error) {
+      console.error('❌ Login error:', error);
+      console.error('📋 Error response:', error.response?.data);
+      console.error('🔗 Request URL:', error.config?.url);
+      
       const message = error.response?.data?.detail || 'Login failed';
       toast.error(message);
       return { success: false, error: message };
