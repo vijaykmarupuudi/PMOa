@@ -3,7 +3,20 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+// Use the same backend URL logic as AuthContext
+const getBackendURL = () => {
+  if (process.env.REACT_APP_BACKEND_URL && process.env.REACT_APP_BACKEND_URL !== 'http://localhost:8001') {
+    return process.env.REACT_APP_BACKEND_URL;
+  }
+  
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return `${window.location.protocol}//${window.location.host}`;
+  }
+  
+  return 'http://localhost:8001';
+};
+
+const BACKEND_URL = getBackendURL();
 
 const ProjectWizard = () => {
   const navigate = useNavigate();
