@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -7,9 +7,18 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const ProjectWizard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, token } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  
+  // Determine return path based on where user came from
+  const getReturnPath = () => {
+    if (location.pathname.includes('/projects/new') || location.state?.from === 'projects') {
+      return '/projects';
+    }
+    return '/initiation';
+  };
   
   const [formData, setFormData] = useState({
     project_name: '',
@@ -19,13 +28,22 @@ const ProjectWizard = () => {
     team_size: '',
     duration_estimate: '',
     budget_range: '',
-    methodology: 'hybrid'
+    methodology: 'hybrid',
+    // Additional fields for comprehensive project creation
+    description: '',
+    priority: 'medium',
+    start_date: '',
+    end_date: '',
+    budget: '',
+    tags: [],
+    stakeholders: []
   });
 
   const steps = [
     { id: 1, name: 'Project Basics', description: 'Basic project information' },
     { id: 2, name: 'Project Details', description: 'Detailed project configuration' },
-    { id: 3, name: 'Review & Create', description: 'Review and create project' }
+    { id: 3, name: 'Timeline & Budget', description: 'Project timeline and budget planning' },
+    { id: 4, name: 'Review & Create', description: 'Review and create project' }
   ];
 
   const handleInputChange = (e) => {
@@ -34,6 +52,18 @@ const ProjectWizard = () => {
   };
 
   const handleNext = () => {
+    // Validation for each step
+    if (currentStep === 1) {
+      if (!formData.project_name.trim()) {
+        toast.error('Project name is required');
+        return;
+      }
+      if (!formData.description.trim()) {
+        toast.error('Project description is required');
+        return;
+      }
+    }
+    
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
     }
@@ -56,13 +86,24 @@ const ProjectWizard = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          // Ensure we have a description
+          description: formData.description || `${formData.project_type} project using ${formData.methodology} methodology`
+        })
       });
 
       if (response.ok) {
         const project = await response.json();
         toast.success('Project created successfully!');
-        navigate(`/projects/${project.id}`);
+        
+        // Navigate based on where user came from
+        const returnPath = getReturnPath();
+        if (returnPath === '/projects') {
+          navigate(`/projects/${project.id}`);
+        } else {
+          navigate(`/initiation/project/${project.id}/charter`);
+        }
       } else {
         const error = await response.json();
         toast.error(error.detail || 'Failed to create project');
@@ -73,6 +114,26 @@ const ProjectWizard = () => {
     }
     
     setLoading(false);
+  };
+
+  const handleCancel = () => {
+    navigate(getReturnPath());
+  };
+
+  const addTag = (tag) => {
+    if (tag.trim() && !formData.tags.includes(tag.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, tag.trim()]
+      }));
+    }
+  };
+
+  const removeTag = (tagToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
   };
 
   const renderStepContent = () => {
@@ -96,6 +157,23 @@ const ProjectWizard = () => {
                 data-testid="project-name-input"
               />
             </div>
+
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+                Project Description *
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Describe your project objectives and scope..."
+                required
+                data-testid="project-description-input"
+              />
+            </div>
             
             <div>
               <label htmlFor="project_type" className="block text-sm font-medium text-gray-700 mb-2">
@@ -112,6 +190,25 @@ const ProjectWizard = () => {
                 <option value="standard">Standard Project</option>
                 <option value="agile">Agile Project</option>
                 <option value="waterfall">Waterfall Project</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-2">
+                Priority Level
+              </label>
+              <select
+                id="priority"
+                name="priority"
+                value={formData.priority}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                data-testid="priority-select"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
               </select>
             </div>
 
@@ -179,6 +276,24 @@ const ProjectWizard = () => {
             </div>
 
             <div>
+              <label htmlFor="methodology" className="block text-sm font-medium text-gray-700 mb-2">
+                Project Methodology
+              </label>
+              <select
+                id="methodology"
+                name="methodology"
+                value={formData.methodology}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                data-testid="methodology-select"
+              >
+                <option value="agile">Agile</option>
+                <option value="waterfall">Waterfall</option>
+                <option value="hybrid">Hybrid</option>
+              </select>
+            </div>
+
+            <div>
               <label htmlFor="duration_estimate" className="block text-sm font-medium text-gray-700 mb-2">
                 Duration Estimate
               </label>
@@ -197,10 +312,65 @@ const ProjectWizard = () => {
                 <option value="1+ year">1+ year</option>
               </select>
             </div>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="start_date" className="block text-sm font-medium text-gray-700 mb-2">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  id="start_date"
+                  name="start_date"
+                  value={formData.start_date}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  data-testid="start-date-input"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="end_date" className="block text-sm font-medium text-gray-700 mb-2">
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  id="end_date"
+                  name="end_date"
+                  value={formData.end_date}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  data-testid="end-date-input"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-2">
+                Budget ($)
+              </label>
+              <input
+                type="number"
+                id="budget"
+                name="budget"
+                value={formData.budget}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter specific budget amount"
+                min="0"
+                step="0.01"
+                data-testid="budget-input"
+              />
+            </div>
 
             <div>
               <label htmlFor="budget_range" className="block text-sm font-medium text-gray-700 mb-2">
-                Budget Range
+                Budget Range (if specific amount unknown)
               </label>
               <select
                 id="budget_range"
@@ -208,7 +378,7 @@ const ProjectWizard = () => {
                 value={formData.budget_range}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                data-testid="budget-select"
+                data-testid="budget-range-select"
               >
                 <option value="">Select Budget Range</option>
                 <option value="< $10K">Less than $10,000</option>
@@ -218,32 +388,14 @@ const ProjectWizard = () => {
                 <option value="$500K+">$500,000+</option>
               </select>
             </div>
-
-            <div>
-              <label htmlFor="methodology" className="block text-sm font-medium text-gray-700 mb-2">
-                Project Methodology
-              </label>
-              <select
-                id="methodology"
-                name="methodology"
-                value={formData.methodology}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                data-testid="methodology-select"
-              >
-                <option value="agile">Agile</option>
-                <option value="waterfall">Waterfall</option>
-                <option value="hybrid">Hybrid</option>
-              </select>
-            </div>
           </div>
         );
 
-      case 3:
+      case 4:
         return (
           <div className="space-y-6">
             <h3 className="text-lg font-medium text-gray-900">Review Your Project</h3>
-            <div className="bg-gray-50 p-4 rounded-md">
+            <div className="bg-gray-50 p-6 rounded-md">
               <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
                 <div>
                   <dt className="text-sm font-medium text-gray-500">Project Name</dt>
@@ -252,6 +404,10 @@ const ProjectWizard = () => {
                 <div>
                   <dt className="text-sm font-medium text-gray-500">Project Type</dt>
                   <dd className="text-sm text-gray-900 capitalize">{formData.project_type}</dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Priority</dt>
+                  <dd className="text-sm text-gray-900 capitalize">{formData.priority}</dd>
                 </div>
                 <div>
                   <dt className="text-sm font-medium text-gray-500">Industry</dt>
@@ -270,14 +426,31 @@ const ProjectWizard = () => {
                   <dd className="text-sm text-gray-900">{formData.duration_estimate || 'Not specified'}</dd>
                 </div>
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Budget Range</dt>
-                  <dd className="text-sm text-gray-900">{formData.budget_range || 'Not specified'}</dd>
-                </div>
-                <div>
                   <dt className="text-sm font-medium text-gray-500">Methodology</dt>
                   <dd className="text-sm text-gray-900 capitalize">{formData.methodology}</dd>
                 </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Start Date</dt>
+                  <dd className="text-sm text-gray-900">{formData.start_date || 'Not specified'}</dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">End Date</dt>
+                  <dd className="text-sm text-gray-900">{formData.end_date || 'Not specified'}</dd>
+                </div>
+                <div>
+                  <dt className="text-sm font-medium text-gray-500">Budget</dt>
+                  <dd className="text-sm text-gray-900">
+                    {formData.budget ? `$${formData.budget}` : formData.budget_range || 'Not specified'}
+                  </dd>
+                </div>
               </dl>
+              
+              {formData.description && (
+                <div className="mt-4">
+                  <dt className="text-sm font-medium text-gray-500">Description</dt>
+                  <dd className="mt-1 text-sm text-gray-900">{formData.description}</dd>
+                </div>
+              )}
             </div>
           </div>
         );
@@ -293,7 +466,7 @@ const ProjectWizard = () => {
         <div className="px-6 py-4 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-900">Project Setup Wizard</h1>
           <p className="mt-1 text-sm text-gray-600">
-            Create a new project with guided setup
+            Create a new project with comprehensive guided setup
           </p>
         </div>
 
@@ -343,21 +516,31 @@ const ProjectWizard = () => {
 
           {/* Navigation Buttons */}
           <div className="px-6 py-4 bg-gray-50 flex justify-between">
-            <button
-              type="button"
-              onClick={handlePrev}
-              disabled={currentStep === 1}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              data-testid="wizard-prev-btn"
-            >
-              Previous
-            </button>
+            <div className="flex space-x-3">
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                data-testid="wizard-cancel-btn"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handlePrev}
+                disabled={currentStep === 1}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                data-testid="wizard-prev-btn"
+              >
+                Previous
+              </button>
+            </div>
             
             {currentStep < steps.length ? (
               <button
                 type="button"
                 onClick={handleNext}
-                disabled={!formData.project_name}
+                disabled={!formData.project_name || !formData.description}
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="wizard-next-btn"
               >
@@ -366,7 +549,7 @@ const ProjectWizard = () => {
             ) : (
               <button
                 type="submit"
-                disabled={loading || !formData.project_name}
+                disabled={loading || !formData.project_name || !formData.description}
                 className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="wizard-create-btn"
               >
