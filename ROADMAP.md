@@ -231,7 +231,7 @@ Enterprise PMO application with project portfolio management, risk tracking, iss
 ## Technical Architecture
 
 ### Backend Stack
-- **Framework**: FastAPI 0.104.1 with async/await support
+- **Framework**: FastAPI 0.108.0 with async/await support
 - **Database**: MongoDB with Motor 3.3.2 async driver
 - **Authentication**: JWT tokens with bcrypt password hashing
 - **Data Validation**: Pydantic 2.4.2 with email validation
