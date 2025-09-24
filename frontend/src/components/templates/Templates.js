@@ -86,7 +86,24 @@ const Templates = () => {
       }
     } catch (error) {
       console.error('❌ Error fetching templates:', error);
-      toast.error('Error loading templates');
+      
+      // Handle different error types properly
+      let errorMessage = 'Error loading templates';
+      
+      if (error.response?.data) {
+        const errorData = error.response.data;
+        if (error.response.status === 422 && errorData.detail && Array.isArray(errorData.detail)) {
+          const validationErrors = errorData.detail.map(err => {
+            const field = err.loc?.slice(1).join('.') || 'field';
+            return `${field}: ${err.msg}`;
+          });
+          errorMessage = validationErrors.join(', ');
+        } else if (errorData.detail) {
+          errorMessage = typeof errorData.detail === 'string' ? errorData.detail : 'Error loading templates';
+        }
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
