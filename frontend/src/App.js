@@ -10,6 +10,7 @@ import Dashboard from './components/dashboard/Dashboard';
 import ProjectList from './components/projects/ProjectList';
 import ProjectDetail from './components/projects/ProjectDetail';
 import CreateProject from './components/projects/CreateProject';
+import Initiation from './components/initiation/Initiation';
 import Navbar from './components/layout/Navbar';
 import Sidebar from './components/layout/Sidebar';
 import { AuthProvider, useAuth } from './context/AuthContext';
