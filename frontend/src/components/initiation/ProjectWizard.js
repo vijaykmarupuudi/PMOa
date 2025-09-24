@@ -138,7 +138,26 @@ const ProjectWizard = () => {
       }
     } catch (error) {
       console.error('Error creating project:', error);
-      toast.error('Failed to create project');
+      
+      // Handle network errors and other exceptions
+      let errorMessage = 'Failed to create project - network error';
+      
+      if (error.response?.data) {
+        const errorData = error.response.data;
+        
+        if (error.response.status === 422 && errorData.detail && Array.isArray(errorData.detail)) {
+          // Parse Pydantic validation errors
+          const validationErrors = errorData.detail.map(err => {
+            const field = err.loc?.slice(1).join('.') || 'field';
+            return `${field}: ${err.msg}`;
+          });
+          errorMessage = validationErrors.join(', ');
+        } else if (errorData.detail) {
+          errorMessage = typeof errorData.detail === 'string' ? errorData.detail : 'Failed to create project';
+        }
+      }
+      
+      toast.error(errorMessage);
     }
     
     setLoading(false);
