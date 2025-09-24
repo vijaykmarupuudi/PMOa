@@ -118,8 +118,23 @@ const ProjectWizard = () => {
           navigate(`/initiation/project/${project.id}/charter`);
         }
       } else {
-        const error = await response.json();
-        toast.error(error.detail || 'Failed to create project');
+        const errorData = await response.json();
+        
+        // Handle FastAPI validation errors (422) properly
+        let errorMessage = 'Failed to create project';
+        
+        if (response.status === 422 && errorData.detail && Array.isArray(errorData.detail)) {
+          // Parse Pydantic validation errors
+          const validationErrors = errorData.detail.map(err => {
+            const field = err.loc?.slice(1).join('.') || 'field';
+            return `${field}: ${err.msg}`;
+          });
+          errorMessage = validationErrors.join(', ');
+        } else if (errorData.detail) {
+          errorMessage = typeof errorData.detail === 'string' ? errorData.detail : 'Failed to create project';
+        }
+        
+        toast.error(errorMessage);
       }
     } catch (error) {
       console.error('Error creating project:', error);
