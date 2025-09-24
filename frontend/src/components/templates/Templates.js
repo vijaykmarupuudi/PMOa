@@ -65,9 +65,24 @@ const Templates = () => {
         console.log('📋 Templates data received:', data.length, 'templates');
         setTemplates(data);
       } else {
-        const errorText = await response.text();
-        console.error('❌ Templates fetch error:', response.status, errorText);
-        toast.error('Failed to fetch templates');
+        const errorData = await response.json();
+        console.error('❌ Templates fetch error:', response.status, errorData);
+        
+        // Handle different error types properly
+        let errorMessage = 'Failed to fetch templates';
+        
+        if (response.status === 422 && errorData.detail && Array.isArray(errorData.detail)) {
+          // Parse Pydantic validation errors
+          const validationErrors = errorData.detail.map(err => {
+            const field = err.loc?.slice(1).join('.') || 'field';
+            return `${field}: ${err.msg}`;
+          });
+          errorMessage = validationErrors.join(', ');
+        } else if (errorData.detail) {
+          errorMessage = typeof errorData.detail === 'string' ? errorData.detail : 'Failed to fetch templates';
+        }
+        
+        toast.error(errorMessage);
       }
     } catch (error) {
       console.error('❌ Error fetching templates:', error);
