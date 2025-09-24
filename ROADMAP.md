@@ -112,13 +112,6 @@ Enterprise PMO application with project portfolio management, risk tracking, iss
 - ✅ Navigation integration and routing
 - ✅ Data persistence and state management
 
-#### Module 1: Initiation
-- [ ] Project setup wizard
-- [ ] Project Charter template
-- [ ] Business Case creation
-- [ ] Stakeholder Register management
-- [ ] Role-based template access
-
 #### Module 2: Planning
 - [ ] Interactive Work Breakdown Structure (WBS)
 - [ ] Gantt chart timeline view
