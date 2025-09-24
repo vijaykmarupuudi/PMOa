@@ -149,6 +149,27 @@ class ProjectSetupWizardBase(BaseModel):
     budget_range: Optional[str] = None
     methodology: str = "hybrid"  # agile, waterfall, hybrid
 
+# Template Models
+class TemplateType(str, Enum):
+    PROJECT_CHARTER = "project_charter"
+    BUSINESS_CASE = "business_case"
+
+class TemplateBase(BaseModel):
+    name: str
+    description: str
+    template_type: TemplateType
+    industry: Optional[str] = None
+    project_type: Optional[str] = None
+    template_data: Dict[str, Any] = {}
+    is_default: bool = False
+
+class Template(TemplateBase):
+    id: str
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+    usage_count: int = 0
+
 class UserCreate(UserBase):
     password: str
 
