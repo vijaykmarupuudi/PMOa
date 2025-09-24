@@ -26,13 +26,12 @@ const Templates = () => {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
 
-  useEffect(() => {
-    if (token) {
-      fetchTemplates();
+  const fetchTemplates = React.useCallback(async () => {
+    if (!token) {
+      console.log('⚠️ No token available, skipping template fetch');
+      return;
     }
-  }, [selectedType, selectedIndustry, token]);
 
-  const fetchTemplates = async () => {
     setLoading(true);
     try {
       let url = `${BACKEND_URL}/api/templates`;
@@ -73,9 +72,14 @@ const Templates = () => {
     } catch (error) {
       console.error('❌ Error fetching templates:', error);
       toast.error('Error loading templates');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  };
+  }, [token, selectedType, selectedIndustry]);
+
+  useEffect(() => {
+    fetchTemplates();
+  }, [fetchTemplates]);
 
   const handleUseTemplate = async (templateId) => {
     try {
