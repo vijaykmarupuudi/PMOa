@@ -114,13 +114,17 @@ Enterprise PMO application with project portfolio management, risk tracking, iss
 - ✅ **Data Persistence** and state management
 - ✅ **Backend Testing Suite** (backend_test.py) with authentication validation
 
-#### Module 2: Planning
-- [ ] Interactive Work Breakdown Structure (WBS)
-- [ ] Gantt chart timeline view
-- [ ] Budget and cost baseline
-- [ ] Risk Management Plan
-- [ ] Communication Plan builder
-- [ ] Quality/Procurement templates
+#### 📋 Module 2: Planning (NEXT PRIORITY)
+**Status**: Ready for Implementation 📋
+**Target**: Q1 2025
+
+**Planned Features:**
+- [ ] **Interactive Work Breakdown Structure (WBS)** - Hierarchical task decomposition
+- [ ] **Gantt Chart Timeline View** - Visual project scheduling with dependencies
+- [ ] **Budget and Cost Baseline** - Detailed financial planning and tracking
+- [ ] **Risk Management Plan** - Risk identification, assessment, and mitigation strategies
+- [ ] **Communication Plan Builder** - Stakeholder communication matrix and templates
+- [ ] **Quality & Procurement Templates** - Standard templates for quality assurance and procurement planning
 
 #### Module 3: Execution  
 - [ ] Deliverable tracking system
