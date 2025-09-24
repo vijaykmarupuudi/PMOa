@@ -25,11 +25,20 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 24 hours
 app = FastAPI(title="ProjectHub PMO API", version="1.0.0")
 
 # CORS middleware
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://portfolio-pulse-68.preview.emergentagent.com",
+    "https://*.preview.emergentagent.com",
+    "https://*.emergentagent.com"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
