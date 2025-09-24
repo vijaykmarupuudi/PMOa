@@ -12,8 +12,25 @@ export const useAuth = () => {
   return context;
 };
 
-// Configure axios defaults
-const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+// Configure axios defaults - dynamically determine backend URL
+const getBackendURL = () => {
+  // If we have an explicit backend URL from env, use it
+  if (process.env.REACT_APP_BACKEND_URL && process.env.REACT_APP_BACKEND_URL !== 'http://localhost:8001') {
+    return process.env.REACT_APP_BACKEND_URL;
+  }
+  
+  // If we're running in production (not localhost), use relative URL
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    // Use the same domain as frontend but with API prefix
+    return `${window.location.protocol}//${window.location.host}`;
+  }
+  
+  // Default to localhost for development
+  return 'http://localhost:8001';
+};
+
+const API_URL = getBackendURL();
+console.log('🔗 Backend URL configured:', API_URL);
 axios.defaults.baseURL = API_URL;
 
 export const AuthProvider = ({ children }) => {
