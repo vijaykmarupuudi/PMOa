@@ -971,34 +971,44 @@ async def delete_stakeholder(stakeholder_id: str, current_user: User = Depends(g
     await db.stakeholders.delete_one({"id": stakeholder_id})
     return {"message": "Stakeholder deleted successfully"}
 
+# Enhanced Project Setup Wizard Model
+class ProjectSetupWizardExtended(ProjectSetupWizardBase):
+    description: Optional[str] = None
+    priority: Priority = Priority.MEDIUM
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+    budget: Optional[float] = None
+    tags: List[str] = []
+    stakeholders: List[str] = []
+
 # Project Setup Wizard Route
 @app.post("/api/project-wizard", response_model=Project)
 async def create_project_from_wizard(
-    wizard_data: ProjectSetupWizardBase,
+    wizard_data: ProjectSetupWizardExtended,
     current_user: User = Depends(get_current_user)
 ):
     # Check if user has permission
     if current_user.role not in [UserRole.PROJECT_MANAGER, UserRole.EXECUTIVE]:
         raise HTTPException(status_code=403, detail="Not enough permissions")
     
-    # Create project from wizard data
+    # Create comprehensive project from wizard data
     project_dict = {
         "id": str(uuid.uuid4()),
         "name": wizard_data.project_name,
-        "description": f"Project created using {wizard_data.project_type} methodology",
+        "description": wizard_data.description or f"Project created using {wizard_data.project_type} methodology",
         "status": ProjectStatus.INITIATION,
-        "priority": Priority.MEDIUM,
-        "start_date": None,
-        "end_date": None,
-        "budget": 0.0,
-        "stakeholders": [],
-        "tags": [wizard_data.project_type, wizard_data.methodology],
+        "priority": wizard_data.priority,
+        "start_date": wizard_data.start_date,
+        "end_date": wizard_data.end_date,
+        "budget": wizard_data.budget or 0.0,
+        "stakeholders": wizard_data.stakeholders,
+        "tags": wizard_data.tags + [wizard_data.project_type, wizard_data.methodology] if wizard_data.tags else [wizard_data.project_type, wizard_data.methodology],
         "project_manager_id": current_user.id,
         "created_by": current_user.id,
         "created_at": datetime.now(timezone.utc),
         "updated_at": datetime.now(timezone.utc),
         "completion_percentage": 0.0,
-        # Additional wizard fields
+        # Additional wizard fields for enhanced project metadata
         "project_type": wizard_data.project_type,
         "industry": wizard_data.industry,
         "complexity_level": wizard_data.complexity_level,
