@@ -765,6 +765,79 @@ async def create_project_from_wizard(
     
     return Project(**project_dict)
 
+# Template Routes
+@app.get("/api/templates", response_model=List[Template])
+async def get_templates(
+    template_type: Optional[TemplateType] = None,
+    industry: Optional[str] = None,
+    current_user: User = Depends(get_current_user)
+):
+    """Get all templates with optional filtering"""
+    filter_query = {}
+    
+    if template_type:
+        filter_query["template_type"] = template_type
+    if industry:
+        filter_query["industry"] = industry
+    
+    templates = []
+    cursor = db.templates.find(filter_query).sort("is_default", -1)  # Default templates first
+    
+    async for template in cursor:
+        template["_id"] = str(template["_id"])
+        templates.append(Template(**template))
+    
+    return templates
+
+@app.get("/api/templates/{template_id}", response_model=Template)
+async def get_template(template_id: str, current_user: User = Depends(get_current_user)):
+    """Get a specific template by ID"""
+    template = await db.templates.find_one({"id": template_id})
+    
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    template["_id"] = str(template["_id"])
+    return Template(**template)
+
+@app.post("/api/templates", response_model=Template)
+async def create_template(
+    template_data: TemplateBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new template"""
+    # Check if user has permission
+    if current_user.role not in [UserRole.PROJECT_MANAGER, UserRole.EXECUTIVE]:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+    
+    template_dict = template_data.dict()
+    template_dict["id"] = str(uuid.uuid4())
+    template_dict["created_by"] = current_user.id
+    template_dict["created_at"] = datetime.now(timezone.utc)
+    template_dict["updated_at"] = datetime.now(timezone.utc)
+    template_dict["usage_count"] = 0
+    
+    await db.templates.insert_one(template_dict)
+    template_dict["_id"] = str(template_dict.get("_id"))
+    
+    return Template(**template_dict)
+
+@app.post("/api/templates/{template_id}/use")
+async def use_template(template_id: str, current_user: User = Depends(get_current_user)):
+    """Mark template as used (increment usage count)"""
+    template = await db.templates.find_one({"id": template_id})
+    
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    # Increment usage count
+    await db.templates.update_one(
+        {"id": template_id},
+        {"$inc": {"usage_count": 1}}
+    )
+    
+    return {"message": "Template usage recorded", "template_id": template_id}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
