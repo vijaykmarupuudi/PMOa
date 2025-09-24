@@ -533,6 +533,217 @@ async def get_dashboard_stats(current_user: User = Depends(get_current_user)):
         "completion_rate": round((completed_projects / max(total_projects, 1)) * 100, 1)
     }
 
+# PMO Module Routes
+
+# Project Charter Routes
+@app.post("/api/project-charter", response_model=ProjectCharter)
+async def create_project_charter(
+    charter_data: ProjectCharterBase,
+    current_user: User = Depends(get_current_user)
+):
+    # Check if user has permission
+    if current_user.role not in [UserRole.PROJECT_MANAGER, UserRole.EXECUTIVE]:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+    
+    # Check if project exists
+    project = await db.projects.find_one({"id": charter_data.project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    charter_dict = charter_data.dict()
+    charter_dict["id"] = str(uuid.uuid4())
+    charter_dict["created_by"] = current_user.id
+    charter_dict["created_at"] = datetime.now(timezone.utc)
+    charter_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.project_charters.insert_one(charter_dict)
+    charter_dict["_id"] = str(charter_dict.get("_id"))
+    
+    return ProjectCharter(**charter_dict)
+
+@app.get("/api/project-charter/project/{project_id}", response_model=ProjectCharter)
+async def get_project_charter(project_id: str, current_user: User = Depends(get_current_user)):
+    charter = await db.project_charters.find_one({"project_id": project_id})
+    
+    if not charter:
+        raise HTTPException(status_code=404, detail="Project charter not found")
+    
+    charter["_id"] = str(charter["_id"])
+    return ProjectCharter(**charter)
+
+@app.put("/api/project-charter/{charter_id}", response_model=ProjectCharter)
+async def update_project_charter(
+    charter_id: str,
+    charter_update: ProjectCharterBase,
+    current_user: User = Depends(get_current_user)
+):
+    charter = await db.project_charters.find_one({"id": charter_id})
+    
+    if not charter:
+        raise HTTPException(status_code=404, detail="Project charter not found")
+    
+    # Check permissions
+    if current_user.role not in [UserRole.PROJECT_MANAGER, UserRole.EXECUTIVE]:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+    
+    update_dict = charter_update.dict(exclude_unset=True)
+    update_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.project_charters.update_one(
+        {"id": charter_id},
+        {"$set": update_dict}
+    )
+    
+    updated_charter = await db.project_charters.find_one({"id": charter_id})
+    updated_charter["_id"] = str(updated_charter["_id"])
+    
+    return ProjectCharter(**updated_charter)
+
+# Business Case Routes
+@app.post("/api/business-case", response_model=BusinessCase)
+async def create_business_case(
+    case_data: BusinessCaseBase,
+    current_user: User = Depends(get_current_user)
+):
+    # Check if user has permission
+    if current_user.role not in [UserRole.PROJECT_MANAGER, UserRole.EXECUTIVE]:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+    
+    # Check if project exists
+    project = await db.projects.find_one({"id": case_data.project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    case_dict = case_data.dict()
+    case_dict["id"] = str(uuid.uuid4())
+    case_dict["created_by"] = current_user.id
+    case_dict["created_at"] = datetime.now(timezone.utc)
+    case_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.business_cases.insert_one(case_dict)
+    case_dict["_id"] = str(case_dict.get("_id"))
+    
+    return BusinessCase(**case_dict)
+
+@app.get("/api/business-case/project/{project_id}", response_model=BusinessCase)
+async def get_business_case(project_id: str, current_user: User = Depends(get_current_user)):
+    case = await db.business_cases.find_one({"project_id": project_id})
+    
+    if not case:
+        raise HTTPException(status_code=404, detail="Business case not found")
+    
+    case["_id"] = str(case["_id"])
+    return BusinessCase(**case)
+
+# Stakeholder Register Routes
+@app.post("/api/stakeholders", response_model=Stakeholder)
+async def create_stakeholder(
+    stakeholder_data: StakeholderBase,
+    current_user: User = Depends(get_current_user)
+):
+    # Check if project exists
+    project = await db.projects.find_one({"id": stakeholder_data.project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    stakeholder_dict = stakeholder_data.dict()
+    stakeholder_dict["id"] = str(uuid.uuid4())
+    stakeholder_dict["created_by"] = current_user.id
+    stakeholder_dict["created_at"] = datetime.now(timezone.utc)
+    stakeholder_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.stakeholders.insert_one(stakeholder_dict)
+    stakeholder_dict["_id"] = str(stakeholder_dict.get("_id"))
+    
+    return Stakeholder(**stakeholder_dict)
+
+@app.get("/api/stakeholders/project/{project_id}", response_model=List[Stakeholder])
+async def get_project_stakeholders(project_id: str, current_user: User = Depends(get_current_user)):
+    stakeholders = []
+    cursor = db.stakeholders.find({"project_id": project_id})
+    
+    async for stakeholder in cursor:
+        stakeholder["_id"] = str(stakeholder["_id"])
+        stakeholders.append(Stakeholder(**stakeholder))
+    
+    return stakeholders
+
+@app.put("/api/stakeholders/{stakeholder_id}", response_model=Stakeholder)
+async def update_stakeholder(
+    stakeholder_id: str,
+    stakeholder_update: StakeholderBase,
+    current_user: User = Depends(get_current_user)
+):
+    stakeholder = await db.stakeholders.find_one({"id": stakeholder_id})
+    
+    if not stakeholder:
+        raise HTTPException(status_code=404, detail="Stakeholder not found")
+    
+    update_dict = stakeholder_update.dict(exclude_unset=True)
+    update_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.stakeholders.update_one(
+        {"id": stakeholder_id},
+        {"$set": update_dict}
+    )
+    
+    updated_stakeholder = await db.stakeholders.find_one({"id": stakeholder_id})
+    updated_stakeholder["_id"] = str(updated_stakeholder["_id"])
+    
+    return Stakeholder(**updated_stakeholder)
+
+@app.delete("/api/stakeholders/{stakeholder_id}")
+async def delete_stakeholder(stakeholder_id: str, current_user: User = Depends(get_current_user)):
+    stakeholder = await db.stakeholders.find_one({"id": stakeholder_id})
+    
+    if not stakeholder:
+        raise HTTPException(status_code=404, detail="Stakeholder not found")
+    
+    await db.stakeholders.delete_one({"id": stakeholder_id})
+    return {"message": "Stakeholder deleted successfully"}
+
+# Project Setup Wizard Route
+@app.post("/api/project-wizard", response_model=Project)
+async def create_project_from_wizard(
+    wizard_data: ProjectSetupWizardBase,
+    current_user: User = Depends(get_current_user)
+):
+    # Check if user has permission
+    if current_user.role not in [UserRole.PROJECT_MANAGER, UserRole.EXECUTIVE]:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+    
+    # Create project from wizard data
+    project_dict = {
+        "id": str(uuid.uuid4()),
+        "name": wizard_data.project_name,
+        "description": f"Project created using {wizard_data.project_type} methodology",
+        "status": ProjectStatus.INITIATION,
+        "priority": Priority.MEDIUM,
+        "start_date": None,
+        "end_date": None,
+        "budget": 0.0,
+        "stakeholders": [],
+        "tags": [wizard_data.project_type, wizard_data.methodology],
+        "project_manager_id": current_user.id,
+        "created_by": current_user.id,
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc),
+        "completion_percentage": 0.0,
+        # Additional wizard fields
+        "project_type": wizard_data.project_type,
+        "industry": wizard_data.industry,
+        "complexity_level": wizard_data.complexity_level,
+        "team_size": wizard_data.team_size,
+        "duration_estimate": wizard_data.duration_estimate,
+        "budget_range": wizard_data.budget_range,
+        "methodology": wizard_data.methodology
+    }
+    
+    await db.projects.insert_one(project_dict)
+    project_dict["_id"] = str(project_dict.get("_id"))
+    
+    return Project(**project_dict)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
