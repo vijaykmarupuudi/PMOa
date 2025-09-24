@@ -107,37 +107,51 @@ export default function Sidebar({ open, setOpen }) {
     return item.roles.includes(user?.role);
   };
 
-  const renderNavItem = (item) => (
-    <NavLink
-      key={item.name}
-      to={item.coming_soon ? '#' : item.href}
-      className={({ isActive }) =>
-        `group flex items-center px-2 py-2 text-sm font-medium rounded-md relative ${
-          isActiveLink(item.href)
-            ? 'bg-blue-100 text-blue-900'
-            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-        } ${item.coming_soon ? 'opacity-60 cursor-not-allowed' : ''}`
-      }
-      onClick={(e) => {
-        if (item.coming_soon) {
-          e.preventDefault();
+  const renderNavItem = (item) => {
+    if (item.coming_soon) {
+      return (
+        <div
+          key={item.name}
+          className="group flex items-center px-2 py-2 text-sm font-medium rounded-md relative opacity-60 cursor-not-allowed text-gray-400"
+          data-testid={`nav-${item.name.toLowerCase().replace(' ', '-')}`}
+        >
+          <div className="mr-3 flex-shrink-0 h-6 w-6 text-gray-400">
+            {item.icon}
+          </div>
+          {item.name}
+          <span className="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            Soon
+          </span>
+        </div>
+      );
+    }
+    
+    return (
+      <NavLink
+        key={item.name}
+        to={item.href}
+        className={({ isActive }) =>
+          `group flex items-center px-2 py-2 text-sm font-medium rounded-md relative transition-colors duration-200 ${
+            isActive || isActiveLink(item.href)
+              ? 'bg-blue-100 text-blue-900'
+              : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+          }`
         }
-      }}
-      data-testid={`nav-${item.name.toLowerCase().replace(' ', '-')}`}
-    >
-      <div className={`mr-3 flex-shrink-0 h-6 w-6 ${
-        isActiveLink(item.href) ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'
-      }`}>
-        {item.icon}
-      </div>
-      {item.name}
-      {item.coming_soon && (
-        <span className="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-          Soon
-        </span>
-      )}
-    </NavLink>
-  );
+        data-testid={`nav-${item.name.toLowerCase().replace(' ', '-')}`}
+      >
+        {({ isActive }) => (
+          <>
+            <div className={`mr-3 flex-shrink-0 h-6 w-6 transition-colors duration-200 ${
+              isActive || isActiveLink(item.href) ? 'text-blue-500' : 'text-gray-400 group-hover:text-gray-500'
+            }`}>
+              {item.icon}
+            </div>
+            {item.name}
+          </>
+        )}
+      </NavLink>
+    );
+  };
 
   return (
     <>
