@@ -559,6 +559,7 @@ async def init_default_templates():
 async def startup_event():
     """Initialize the application"""
     await init_demo_users()
+    await init_default_templates()
     print("ProjectHub PMO API started successfully!")
 
 # Routes
