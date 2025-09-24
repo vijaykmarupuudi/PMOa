@@ -47,20 +47,29 @@ const Templates = () => {
         url += `?${params.toString()}`;
       }
 
+      console.log('🔗 Fetching templates from:', url);
+      console.log('🔑 Using token:', token ? 'Present' : 'Missing');
+
       const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
 
+      console.log('📥 Templates response status:', response.status);
+
       if (response.ok) {
         const data = await response.json();
+        console.log('📋 Templates data received:', data.length, 'templates');
         setTemplates(data);
       } else {
+        const errorText = await response.text();
+        console.error('❌ Templates fetch error:', response.status, errorText);
         toast.error('Failed to fetch templates');
       }
     } catch (error) {
-      console.error('Error fetching templates:', error);
+      console.error('❌ Error fetching templates:', error);
       toast.error('Error loading templates');
     }
     setLoading(false);
@@ -71,13 +80,16 @@ const Templates = () => {
       const response = await fetch(`${BACKEND_URL}/api/templates/${templateId}/use`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
 
       if (response.ok) {
         toast.success('Template selected! You can now create your document.');
         // Here you would typically navigate to the creation form with template data
+      } else {
+        toast.error('Failed to use template');
       }
     } catch (error) {
       console.error('Error using template:', error);
