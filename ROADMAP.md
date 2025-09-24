@@ -229,22 +229,38 @@ Enterprise PMO application with project portfolio management, risk tracking, iss
 ## Technical Architecture
 
 ### Backend Stack
-- **Framework**: FastAPI 0.104.1
-- **Database**: MongoDB (Motor async driver)
-- **Authentication**: JWT with bcrypt password hashing
-- **Deployment**: Supervisor process management
+- **Framework**: FastAPI 0.104.1 with async/await support
+- **Database**: MongoDB with Motor 3.3.2 async driver
+- **Authentication**: JWT tokens with bcrypt password hashing
+- **Data Validation**: Pydantic 2.4.2 with email validation
+- **API Documentation**: Auto-generated OpenAPI/Swagger docs
+- **Process Management**: Supervisor for production deployment
+- **Security**: CORS middleware, role-based access control
 
 ### Frontend Stack  
-- **Framework**: React 18.2.0
-- **Styling**: Tailwind CSS 3.3.6
-- **State Management**: React Context API
-- **Charts**: Recharts 2.8.0
-- **HTTP Client**: Axios 1.6.2
+- **Framework**: React 18.2.0 with functional components and hooks
+- **Styling**: Tailwind CSS 3.3.6 with responsive design
+- **Routing**: React Router DOM 6.20.1 with nested routes
+- **State Management**: React Context API for authentication and global state
+- **UI Components**: Heroicons 2.0.18, custom Tailwind components
+- **Charts & Analytics**: Recharts 2.8.0 for dashboard visualizations
+- **HTTP Client**: Axios 1.6.2 for API communication
+- **User Experience**: React Hot Toast 2.4.1 for notifications
+- **Date Handling**: Date-fns 2.30.0, React DatePicker 4.24.0
 
-### Infrastructure
-- **Process Management**: Supervisor
-- **Development**: Hot reload enabled
-- **Ports**: Backend (8001), Frontend (3000)
+### Database Collections
+- **users**: Authentication and user profiles
+- **projects**: Core project data and metadata
+- **project_charters**: PMO initiation documentation
+- **business_cases**: Business justification and ROI analysis
+- **stakeholders**: Project stakeholder management
+
+### Infrastructure & DevOps
+- **Process Management**: Supervisor (backend, frontend, MongoDB)
+- **Development Environment**: Hot reload enabled for both frontend and backend
+- **Port Configuration**: Backend (8001), Frontend (3000), MongoDB (27017)
+- **Testing**: Backend API test suite (backend_test.py)
+- **Environment Variables**: Secure configuration management
 
 ## Demo Users
 - **Project Manager**: pm@projecthub.com / demo123
