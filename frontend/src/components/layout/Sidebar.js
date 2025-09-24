@@ -157,9 +157,13 @@ export default function Sidebar({ open, setOpen }) {
     <>
       {/* Mobile sidebar overlay */}
       {open && (
-        <div className="fixed inset-0 flex z-40 md:hidden">
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setOpen(false)} />
-          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white">
+        <div className="fixed inset-0 flex z-50 md:hidden">
+          <div 
+            className="fixed inset-0 bg-gray-600 bg-opacity-75" 
+            onClick={() => setOpen(false)}
+            aria-hidden="true" 
+          />
+          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white shadow-xl">
             <div className="absolute top-0 right-0 -mr-12 pt-2">
               <button
                 type="button"
@@ -188,7 +192,9 @@ export default function Sidebar({ open, setOpen }) {
                 <span className="ml-2 text-xl font-semibold text-gray-900">ProjectHub</span>
               </div>
               <nav className="mt-5 px-2 space-y-1">
-                {navigation.filter(canAccessMenuItem).map(renderNavItem)}
+                {navigation.filter(canAccessMenuItem).map((item) => 
+                  renderMobileNavItem(item)
+                )}
                 
                 {(user?.role === 'executive' || user?.role === 'project_manager') && (
                   <>
@@ -197,7 +203,9 @@ export default function Sidebar({ open, setOpen }) {
                         Management
                       </p>
                     </div>
-                    {adminNavigation.filter(canAccessMenuItem).map(renderNavItem)}
+                    {adminNavigation.filter(canAccessMenuItem).map((item) =>
+                      renderMobileNavItem(item)
+                    )}
                   </>
                 )}
               </nav>
