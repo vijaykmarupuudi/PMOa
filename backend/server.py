@@ -308,6 +308,253 @@ async def init_demo_users():
             await db.users.insert_one(user)
             print(f"Demo user created: {user['email']}")
 
+async def init_default_templates():
+    """Initialize default project charter and business case templates"""
+    default_templates = [
+        # Project Charter Templates
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Standard Project Charter",
+            "description": "A comprehensive project charter template for standard projects",
+            "template_type": "project_charter",
+            "industry": "General",
+            "project_type": "standard",
+            "is_default": True,
+            "created_by": "system",
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+            "usage_count": 0,
+            "template_data": {
+                "project_purpose": "Define the purpose and justification for this project",
+                "project_description": "Provide a high-level description of the project deliverables and approach",
+                "project_objectives": [
+                    "Achieve specific, measurable objective 1",
+                    "Deliver quantifiable outcome 2",
+                    "Establish improved process/system 3"
+                ],
+                "success_criteria": [
+                    "Project completed within approved timeline",
+                    "Budget adherence within 5% variance",
+                    "Quality standards met per acceptance criteria",
+                    "Stakeholder satisfaction rating above 85%"
+                ],
+                "scope_inclusions": [
+                    "Define what is included in project scope",
+                    "Specify deliverables and work packages",
+                    "List systems, processes, or areas affected"
+                ],
+                "scope_exclusions": [
+                    "Clearly state what is NOT included",
+                    "Identify future phase activities",
+                    "List assumptions and constraints"
+                ],
+                "assumptions": [
+                    "Resource availability as planned",
+                    "Stakeholder engagement and support",
+                    "Technology/infrastructure readiness",
+                    "Regulatory environment stability"
+                ],
+                "constraints": [
+                    "Budget limitations and approval levels",
+                    "Timeline restrictions and key dates",
+                    "Resource constraints and dependencies",
+                    "Technical or regulatory constraints"
+                ],
+                "key_milestones": [
+                    {"name": "Project Initiation Complete", "target_date": "", "description": "Charter approved and team assembled"},
+                    {"name": "Planning Phase Complete", "target_date": "", "description": "Detailed plans approved and baselined"},
+                    {"name": "Mid-project Review", "target_date": "", "description": "Progress assessment and course correction"},
+                    {"name": "Project Delivery", "target_date": "", "description": "Final deliverables completed and accepted"}
+                ]
+            }
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Agile Project Charter",
+            "description": "Project charter template optimized for Agile methodology projects",
+            "template_type": "project_charter",
+            "industry": "Technology",
+            "project_type": "agile",
+            "is_default": True,
+            "created_by": "system",
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+            "usage_count": 0,
+            "template_data": {
+                "project_purpose": "Deliver value through iterative development and continuous customer collaboration",
+                "project_description": "Agile development project with regular sprints and stakeholder feedback loops",
+                "project_objectives": [
+                    "Deliver working software in iterative cycles",
+                    "Maintain high customer satisfaction through collaboration",
+                    "Adapt to changing requirements effectively",
+                    "Foster team collaboration and continuous improvement"
+                ],
+                "success_criteria": [
+                    "Sprint goals consistently achieved",
+                    "Customer satisfaction maintained above 90%",
+                    "Team velocity stable and predictable",
+                    "Product backlog efficiently managed"
+                ],
+                "scope_inclusions": [
+                    "Product development and enhancement",
+                    "Sprint planning and execution",
+                    "Regular stakeholder demonstrations",
+                    "Continuous integration and testing"
+                ],
+                "scope_exclusions": [
+                    "Detailed upfront documentation",
+                    "Fixed scope and timeline commitments",
+                    "Waterfall methodology practices"
+                ],
+                "assumptions": [
+                    "Product Owner availability for regular collaboration",
+                    "Development team co-location or effective remote setup",
+                    "Agile tooling and infrastructure in place",
+                    "Stakeholder buy-in for Agile approach"
+                ],
+                "constraints": [
+                    "Sprint duration fixed at 2-4 weeks",
+                    "Team size limitations",
+                    "Technology stack constraints",
+                    "Compliance and regulatory requirements"
+                ],
+                "key_milestones": [
+                    {"name": "Sprint 0 Complete", "target_date": "", "description": "Team formation and initial setup"},
+                    {"name": "MVP Release", "target_date": "", "description": "Minimum viable product delivered"},
+                    {"name": "Mid-project Retrospective", "target_date": "", "description": "Process improvement assessment"},
+                    {"name": "Product Launch", "target_date": "", "description": "Final product release"}
+                ]
+            }
+        },
+        # Business Case Templates
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Standard Business Case",
+            "description": "Comprehensive business case template for project justification",
+            "template_type": "business_case",
+            "industry": "General",
+            "project_type": "standard",
+            "is_default": True,
+            "created_by": "system",
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+            "usage_count": 0,
+            "template_data": {
+                "problem_statement": "Clearly articulate the business problem or opportunity that requires attention",
+                "business_need": "Explain the business need and urgency for addressing this problem",
+                "proposed_solution": "Describe the recommended solution approach and key components",
+                "expected_benefits": [
+                    "Quantified cost savings or revenue increase",
+                    "Process efficiency improvements",
+                    "Risk reduction or compliance benefits",
+                    "Strategic alignment and competitive advantage"
+                ],
+                "cost_benefit_analysis": {
+                    "implementation_costs": {
+                        "personnel": "Internal resource costs",
+                        "technology": "Software, hardware, infrastructure",
+                        "external_services": "Consultants, vendors, contractors",
+                        "training": "Staff training and change management",
+                        "other": "Travel, facilities, miscellaneous"
+                    },
+                    "ongoing_costs": {
+                        "maintenance": "System maintenance and support",
+                        "operations": "Ongoing operational expenses",
+                        "licenses": "Software licensing and subscriptions"
+                    },
+                    "benefits": {
+                        "cost_savings": "Annual cost reduction",
+                        "revenue_increase": "Additional revenue generation",
+                        "productivity_gains": "Efficiency improvements",
+                        "risk_avoidance": "Risk mitigation value"
+                    },
+                    "roi_calculation": "Net Present Value and Return on Investment analysis"
+                },
+                "risk_assessment": [
+                    "Implementation risks and mitigation strategies",
+                    "Technology risks and contingencies",
+                    "Resource availability risks",
+                    "Change management and adoption risks",
+                    "Market or regulatory risks"
+                ],
+                "alternatives_considered": [
+                    "Do nothing - maintain status quo",
+                    "Alternative solution approaches",
+                    "Phased implementation options",
+                    "Third-party service options"
+                ],
+                "recommendation": "Recommended course of action based on analysis",
+                "return_on_investment": "Expected ROI timeline and break-even analysis"
+            }
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Technology Investment Business Case",
+            "description": "Business case template focused on technology investments and digital transformation",
+            "template_type": "business_case",
+            "industry": "Technology",
+            "project_type": "standard",
+            "is_default": True,
+            "created_by": "system",
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+            "usage_count": 0,
+            "template_data": {
+                "problem_statement": "Current technology limitations impacting business performance and growth",
+                "business_need": "Digital transformation required to maintain competitive position and operational efficiency",
+                "proposed_solution": "Implementation of modern technology platform with enhanced capabilities",
+                "expected_benefits": [
+                    "Improved system performance and reliability",
+                    "Enhanced user experience and productivity",
+                    "Better data analytics and decision-making capabilities",
+                    "Reduced operational costs through automation",
+                    "Increased scalability and future-readiness"
+                ],
+                "cost_benefit_analysis": {
+                    "implementation_costs": {
+                        "software_licenses": "Platform licensing and subscriptions",
+                        "hardware_infrastructure": "Servers, network, storage equipment",
+                        "implementation_services": "Professional services and consulting",
+                        "data_migration": "Legacy system migration costs",
+                        "training_change_mgmt": "User training and change management"
+                    },
+                    "ongoing_costs": {
+                        "annual_licensing": "Recurring software costs",
+                        "support_maintenance": "Technical support and maintenance",
+                        "cloud_operations": "Cloud hosting and operations"
+                    },
+                    "benefits": {
+                        "productivity_gains": "User efficiency improvements",
+                        "operational_savings": "Reduced manual processes",
+                        "infrastructure_savings": "Legacy system retirement",
+                        "revenue_enablement": "New capability-driven revenue"
+                    }
+                },
+                "risk_assessment": [
+                    "Technical implementation complexity",
+                    "Data migration and integration challenges",
+                    "User adoption and change resistance",
+                    "Vendor dependency and support risks",
+                    "Security and compliance considerations"
+                ],
+                "alternatives_considered": [
+                    "Continue with legacy systems",
+                    "Phased modernization approach",
+                    "Cloud-first vs hybrid solutions",
+                    "Build vs buy analysis"
+                ],
+                "recommendation": "Proceed with recommended technology investment for competitive advantage",
+                "return_on_investment": "Expected 18-24 month payback period with 150% ROI over 3 years"
+            }
+        }
+    ]
+    
+    for template in default_templates:
+        existing = await db.templates.find_one({"name": template["name"]})
+        if not existing:
+            await db.templates.insert_one(template)
+            print(f"Default template created: {template['name']}")
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize the application"""
