@@ -45,7 +45,7 @@ function AppContent() {
       <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
       
       {/* Main content */}
-      <div className="flex flex-col w-0 flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1 overflow-hidden md:ml-64">
         <Navbar setSidebarOpen={setSidebarOpen} />
         
         <main className="flex-1 relative overflow-y-auto focus:outline-none">
