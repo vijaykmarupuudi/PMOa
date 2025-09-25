@@ -11,6 +11,7 @@ import ProjectList from './components/projects/ProjectList';
 import ProjectDetail from './components/projects/ProjectDetail';
 import CreateProject from './components/projects/CreateProject';
 import Initiation from './components/initiation/Initiation';
+import Planning from './components/planning/Planning';
 import Templates from './components/templates/Templates';
 import Navbar from './components/layout/Navbar';
 import Sidebar from './components/layout/Sidebar';
