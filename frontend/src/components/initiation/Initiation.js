@@ -138,7 +138,6 @@ const Initiation = () => {
             // Update active projects count in quick actions
           }}
         />
-          </div>
         </div>
       </div>
     );
