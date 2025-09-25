@@ -1414,6 +1414,240 @@ async def init_sample_timeline_data():
                 await db.milestones.insert_one(milestone)
                 print(f"Sample milestone created: {milestone['name']} for project {project['name']}")
 
+        # Sample Communication Plans
+        sample_communication_plans = [
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "stakeholder_group": "Project Team",
+                "information_type": "Daily Standup Updates",
+                "method": "meeting",
+                "frequency": "daily",
+                "responsible_person": "Scrum Master",
+                "audience": ["Development Team", "Product Owner", "QA Team"],
+                "purpose": "Synchronize team activities, identify blockers, and plan daily work",
+                "format": "15-minute standup meeting",
+                "delivery_date": datetime(2025, 1, 15, 9, 0, 0, tzinfo=timezone.utc),
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "stakeholder_group": "Executive Sponsors",
+                "information_type": "Project Status Report",
+                "method": "report",
+                "frequency": "weekly",
+                "responsible_person": "Project Manager",
+                "audience": ["Executive Team", "Department Heads", "Key Stakeholders"],
+                "purpose": "Provide high-level project status, risks, and key decisions needed",
+                "format": "Executive summary document with dashboard metrics",
+                "delivery_date": datetime(2025, 1, 19, 17, 0, 0, tzinfo=timezone.utc),
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "stakeholder_group": "End Users",
+                "information_type": "Feature Demonstrations",
+                "method": "meeting",
+                "frequency": "biweekly",
+                "responsible_person": "Product Owner",
+                "audience": ["Business Users", "Department Representatives", "Training Team"],
+                "purpose": "Demonstrate completed features and gather user feedback",
+                "format": "Interactive demo sessions with Q&A",
+                "delivery_date": datetime(2025, 2, 1, 14, 0, 0, tzinfo=timezone.utc),
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            }
+        ]
+
+        # Sample Quality Requirements
+        sample_quality_requirements = [
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "requirement_name": "Performance Testing Standards",
+                "description": "System must handle concurrent users and respond within acceptable timeframes",
+                "standard": "custom",
+                "acceptance_criteria": [
+                    "Response time under 2 seconds for 95% of requests",
+                    "System supports 1000+ concurrent users",
+                    "Database queries optimized for performance",
+                    "Page load times under 3 seconds"
+                ],
+                "testing_approach": "Automated performance testing using JMeter and LoadRunner",
+                "responsible_party": "QA Team Lead",
+                "target_date": datetime(2025, 5, 15, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "planned",
+                "priority": "high",
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "requirement_name": "Security Compliance",
+                "description": "Application must meet security standards and data protection requirements",
+                "standard": "iso_9001",
+                "acceptance_criteria": [
+                    "Data encryption at rest and in transit",
+                    "User authentication and authorization implemented",
+                    "Input validation and sanitization",
+                    "Security audit and penetration testing completed"
+                ],
+                "testing_approach": "Security testing with automated scans and manual penetration testing",
+                "responsible_party": "Security Team",
+                "target_date": datetime(2025, 5, 30, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "planned",
+                "priority": "critical",
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "requirement_name": "User Experience Standards",
+                "description": "Application must provide intuitive and accessible user experience",
+                "standard": "agile_testing",
+                "acceptance_criteria": [
+                    "Responsive design for desktop, tablet, and mobile",
+                    "Accessibility compliance (WCAG 2.1 AA)",
+                    "User acceptance testing with >85% satisfaction",
+                    "Intuitive navigation with minimal learning curve"
+                ],
+                "testing_approach": "User acceptance testing, accessibility audits, and usability studies",
+                "responsible_party": "UX Team",
+                "target_date": datetime(2025, 4, 15, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "in_progress",
+                "priority": "medium",
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            }
+        ]
+
+        # Sample Procurement Items
+        sample_procurement_items = [
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "item_name": "Development Tools & Software Licenses",
+                "description": "Professional development tools and IDE licenses for the development team",
+                "procurement_type": "software",
+                "vendor": "JetBrains",
+                "estimated_cost": 5000.0,
+                "actual_cost": 4800.0,
+                "quantity": 10,
+                "unit": "licenses",
+                "required_date": datetime(2025, 1, 30, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "ordered",
+                "approval_required": True,
+                "approved_by": "IT Director",
+                "notes": "Annual licenses for IntelliJ IDEA Ultimate and WebStorm",
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "item_name": "Cloud Infrastructure Services",
+                "description": "AWS cloud services for development, staging, and production environments",
+                "procurement_type": "services",
+                "vendor": "Amazon Web Services",
+                "estimated_cost": 15000.0,
+                "actual_cost": 0.0,
+                "quantity": 12,
+                "unit": "months",
+                "required_date": datetime(2025, 2, 1, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "approved",
+                "approval_required": True,
+                "approved_by": "CTO",
+                "notes": "EC2 instances, RDS, S3, CloudFront, and monitoring services",
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "item_name": "Security Testing Services",
+                "description": "Professional penetration testing and security audit services",
+                "procurement_type": "consulting",
+                "vendor": "SecureIT Solutions",
+                "estimated_cost": 25000.0,
+                "actual_cost": 0.0,
+                "quantity": 1,
+                "unit": "project",
+                "required_date": datetime(2025, 5, 1, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "rfq_sent",
+                "approval_required": True,
+                "approved_by": None,
+                "notes": "Comprehensive security assessment including penetration testing and code review",
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "item_name": "Project Management Training",
+                "description": "Agile and Scrum training for project team members",
+                "procurement_type": "training",
+                "vendor": "Agile Academy",
+                "estimated_cost": 8000.0,
+                "actual_cost": 0.0,
+                "quantity": 15,
+                "unit": "participants",
+                "required_date": datetime(2025, 3, 1, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "planned",
+                "approval_required": True,
+                "approved_by": None,
+                "notes": "2-day intensive Scrum Master and Product Owner certification training",
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            }
+        ]
+
+        # Insert communication plans
+        for plan in sample_communication_plans:
+            existing_plan = await db.communication_plans.find_one({
+                "project_id": project_id, 
+                "stakeholder_group": plan["stakeholder_group"],
+                "information_type": plan["information_type"]
+            })
+            if not existing_plan:
+                await db.communication_plans.insert_one(plan)
+                print(f"Sample communication plan created: {plan['information_type']} for {plan['stakeholder_group']}")
+
+        # Insert quality requirements
+        for requirement in sample_quality_requirements:
+            existing_requirement = await db.quality_requirements.find_one({
+                "project_id": project_id, 
+                "requirement_name": requirement["requirement_name"]
+            })
+            if not existing_requirement:
+                await db.quality_requirements.insert_one(requirement)
+                print(f"Sample quality requirement created: {requirement['requirement_name']}")
+
+        # Insert procurement items
+        for item in sample_procurement_items:
+            existing_item = await db.procurement_items.find_one({
+                "project_id": project_id, 
+                "item_name": item["item_name"]
+            })
+            if not existing_item:
+                await db.procurement_items.insert_one(item)
+                print(f"Sample procurement item created: {item['item_name']}")
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize the application"""
