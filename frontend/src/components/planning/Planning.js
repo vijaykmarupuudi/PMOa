@@ -264,10 +264,10 @@ const Planning = () => {
         <div className="mt-4 pt-4 border-t border-gray-200">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-500">Module 2 Completion:</span>
-            <span className="font-medium text-blue-600">50% Complete (3 of 6 features)</span>
+            <span className="font-medium text-blue-600">67% Complete (4 of 6 features)</span>
           </div>
           <div className="mt-2 bg-gray-200 rounded-full h-2">
-            <div className="bg-blue-600 h-2 rounded-full" style={{ width: '50%' }}></div>
+            <div className="bg-blue-600 h-2 rounded-full" style={{ width: '67%' }}></div>
           </div>
         </div>
       </div>
