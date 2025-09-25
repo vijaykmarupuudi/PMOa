@@ -169,12 +169,6 @@ const StakeholderRegister = () => {
     }
   };
 
-  const handleTemplateApplied = (result) => {
-    // Refresh stakeholders after template is applied
-    fetchStakeholders();
-    toast.success('Template applied! Sample stakeholders have been added to your project.');
-  };
-
   const getInfluenceColor = (level) => {
     switch (level) {
       case 'high': return 'bg-red-100 text-red-800';
