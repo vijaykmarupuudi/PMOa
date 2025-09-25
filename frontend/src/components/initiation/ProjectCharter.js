@@ -145,6 +145,12 @@ const ProjectCharter = () => {
     setSaving(false);
   };
 
+  const handleTemplateApplied = (result) => {
+    // Refresh the charter data after template is applied
+    fetchCharter();
+    toast.success('Template applied! Charter has been updated.');
+  };
+
   const renderArrayField = (label, field, placeholder) => (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-2">
