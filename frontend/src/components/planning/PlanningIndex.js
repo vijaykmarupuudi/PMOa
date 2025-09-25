@@ -181,14 +181,22 @@ const PlanningIndex = () => {
             <div className="text-gray-400 mb-4">
               <ClipboardDocumentListIcon className="mx-auto h-12 w-12" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No projects available</h3>
-            <p className="text-gray-500 mb-4">Create a project first to access planning features.</p>
-            <button
-              onClick={() => navigate('/projects/new')}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-            >
-              Create Project
-            </button>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No projects ready for planning</h3>
+            <p className="text-gray-500 mb-4">Complete project initiation first, or create a new project to access planning features.</p>
+            <div className="space-x-3">
+              <button
+                onClick={() => navigate('/initiation')}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Go to Initiation
+              </button>
+              <button
+                onClick={() => navigate('/projects/new')}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+              >
+                Create Project
+              </button>
+            </div>
           </div>
         ) : (
           <div className="divide-y divide-gray-200">
