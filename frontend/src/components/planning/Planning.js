@@ -49,7 +49,7 @@ const Planning = () => {
       id: 'timeline',
       name: 'Timeline & Gantt',
       icon: CalendarDaysIcon,
-      component: () => <ComingSoonPlaceholder feature="Timeline & Gantt Chart" />,
+      component: TimelineGantt,
       description: 'Visual project timeline and dependencies'
     },
     {
