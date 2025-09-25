@@ -2697,6 +2697,86 @@ async def update_risk(
 
     return Risk(**updated_risk)
 
+# Project Phase Management Routes
+
+@app.get("/api/projects/by-phase/{phase}", response_model=List[Project])
+async def get_projects_by_phase(
+    phase: ProjectStatus,
+    current_user: User = Depends(get_current_user)
+):
+    """Get all projects in a specific phase"""
+    try:
+        projects = await db.projects.find({"status": phase}).to_list(100)
+        return [Project(**project) for project in projects]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.put("/api/projects/{project_id}/transition/{new_phase}")
+async def transition_project_phase(
+    project_id: str,
+    new_phase: ProjectStatus,
+    current_user: User = Depends(get_current_user)
+):
+    """Transition a project to a new phase"""
+    # Check if user has permission
+    if current_user.role not in [UserRole.PROJECT_MANAGER, UserRole.EXECUTIVE]:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+    
+    try:
+        # Get current project
+        project = await db.projects.find_one({"id": project_id})
+        if not project:
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        # Update project status
+        result = await db.projects.update_one(
+            {"id": project_id},
+            {
+                "$set": {
+                    "status": new_phase,
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            }
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        # Get updated project
+        updated_project = await db.projects.find_one({"id": project_id})
+        return {"message": f"Project transitioned to {new_phase}", "project": Project(**updated_project)}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/projects/available-for-phase/{target_phase}", response_model=List[Project])
+async def get_projects_available_for_phase(
+    target_phase: ProjectStatus,
+    current_user: User = Depends(get_current_user)
+):
+    """Get projects available to transition to a target phase"""
+    try:
+        # Define valid previous phases for each target phase
+        valid_previous_phases = {
+            ProjectStatus.INITIATION: [],  # New projects start here
+            ProjectStatus.PLANNING: [ProjectStatus.INITIATION],
+            ProjectStatus.EXECUTION: [ProjectStatus.PLANNING],
+            ProjectStatus.MONITORING: [ProjectStatus.EXECUTION],
+            ProjectStatus.CLOSURE: [ProjectStatus.MONITORING, ProjectStatus.EXECUTION],
+            ProjectStatus.COMPLETED: [ProjectStatus.CLOSURE],
+            ProjectStatus.CANCELLED: [ProjectStatus.INITIATION, ProjectStatus.PLANNING, ProjectStatus.EXECUTION]
+        }
+        
+        previous_phases = valid_previous_phases.get(target_phase, [])
+        if not previous_phases:
+            return []
+        
+        projects = await db.projects.find({"status": {"$in": previous_phases}}).to_list(100)
+        return [Project(**project) for project in projects]
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Timeline & Gantt Chart Routes
 @app.get("/api/projects/{project_id}/timeline/tasks", response_model=List[TimelineTask])
 async def get_project_timeline_tasks(project_id: str, current_user: User = Depends(get_current_user)):
