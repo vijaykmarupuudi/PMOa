@@ -205,13 +205,24 @@ const StakeholderRegister = () => {
               Manage project stakeholders and their information
             </p>
           </div>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            data-testid="add-stakeholder-btn"
-          >
-            {showForm ? 'Cancel' : 'Add Stakeholder'}
-          </button>
+          <div className="flex space-x-3">
+            {stakeholders.length === 0 && (
+              <button
+                onClick={() => setShowTemplateSelector(true)}
+                className="px-4 py-2 text-sm font-medium text-purple-600 bg-purple-50 rounded-md hover:bg-purple-100"
+                data-testid="use-stakeholder-template-btn"
+              >
+                📋 Use Template
+              </button>
+            )}
+            <button
+              onClick={() => setShowForm(!showForm)}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+              data-testid="add-stakeholder-btn"
+            >
+              {showForm ? 'Cancel' : 'Add Stakeholder'}
+            </button>
+          </div>
         </div>
 
         {showForm && (
