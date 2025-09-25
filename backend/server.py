@@ -1650,6 +1650,171 @@ async def init_sample_timeline_data():
                 await db.procurement_items.insert_one(item)
                 print(f"Sample procurement item created: {item['item_name']}")
 
+
+# Enhanced Resource Management endpoints
+@app.get("/api/projects/{project_id}/resources")
+async def get_project_resources(project_id: str, current_user: User = Depends(get_current_user)):
+    """Get all resources for a project"""
+    resources = []
+    cursor = db.resources.find({"project_id": project_id})
+    
+    async for resource in cursor:
+        resource["_id"] = str(resource["_id"])
+        resources.append(resource)
+    
+    return resources
+
+@app.post("/api/projects/{project_id}/resources")
+async def create_resource(
+    project_id: str,
+    resource_data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new resource"""
+    resource_dict = resource_data.copy()
+    resource_dict.update({
+        "id": str(uuid.uuid4()),
+        "project_id": project_id,
+        "created_by": current_user.id,
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc),
+        "current_allocation": 0.0
+    })
+    
+    await db.resources.insert_one(resource_dict)
+    resource_dict["_id"] = str(resource_dict["_id"])
+    return resource_dict
+
+# Critical Path Analysis endpoint
+@app.get("/api/projects/{project_id}/critical-path")
+async def get_critical_path_analysis(project_id: str, current_user: User = Depends(get_current_user)):
+    """Get critical path analysis for a project"""
+    # Get all timeline tasks
+    tasks_cursor = db.timeline_tasks.find({"project_id": project_id})
+    tasks = []
+    async for task in tasks_cursor:
+        task["_id"] = str(task["_id"])
+        tasks.append(task)
+    
+    if not tasks:
+        return {"critical_path_tasks": [], "project_duration": 0, "recommendations": []}
+    
+    # Simple critical path calculation (in a real implementation, this would be more sophisticated)
+    critical_tasks = [task for task in tasks if task.get("is_critical_path", False)]
+    
+    # Calculate project duration
+    if tasks:
+        start_dates = [task.get("start_date") for task in tasks if task.get("start_date")]
+        end_dates = [task.get("end_date") for task in tasks if task.get("end_date")]
+        
+        if start_dates and end_dates:
+            earliest_start = min([datetime.fromisoformat(d.replace('Z', '+00:00')) if isinstance(d, str) else d for d in start_dates])
+            latest_end = max([datetime.fromisoformat(d.replace('Z', '+00:00')) if isinstance(d, str) else d for d in end_dates])
+            project_duration = (latest_end - earliest_start).days
+        else:
+            project_duration = 0
+    else:
+        project_duration = 0
+    
+    recommendations = []
+    if len(critical_tasks) > len(tasks) * 0.7:
+        recommendations.append("High number of critical path tasks - consider resource optimization")
+    if project_duration > 365:
+        recommendations.append("Long project duration - consider breaking into phases")
+    
+    return {
+        "critical_path_tasks": [task["id"] for task in critical_tasks],
+        "project_duration": project_duration,
+        "earliest_start": min([task.get("start_date") for task in tasks if task.get("start_date")], default=None),
+        "latest_finish": max([task.get("end_date") for task in tasks if task.get("end_date")], default=None),
+        "recommendations": recommendations,
+        "analysis_date": datetime.now(timezone.utc)
+    }
+
+# Resource Utilization endpoint
+@app.get("/api/projects/{project_id}/resource-utilization")
+async def get_resource_utilization(project_id: str, current_user: User = Depends(get_current_user)):
+    """Get resource utilization analysis for a project"""
+    # Get all timeline tasks with resources
+    tasks_cursor = db.timeline_tasks.find({"project_id": project_id})
+    resource_utilization = {}
+    
+    async for task in tasks_cursor:
+        if task.get("resources"):
+            for resource in task["resources"]:
+                resource_name = resource.get("resource_name", "Unknown")
+                allocation = resource.get("allocation_percentage", 0)
+                cost_per_hour = resource.get("cost_per_hour", 0)
+                
+                if resource_name not in resource_utilization:
+                    resource_utilization[resource_name] = {
+                        "total_allocation": 0,
+                        "total_cost": 0,
+                        "tasks": [],
+                        "resource_type": resource.get("resource_type", "human"),
+                        "skills": resource.get("skills", [])
+                    }
+                
+                resource_utilization[resource_name]["total_allocation"] += allocation
+                resource_utilization[resource_name]["total_cost"] += (allocation / 100) * cost_per_hour * task.get("estimated_hours", 0)
+                resource_utilization[resource_name]["tasks"].append({
+                    "task_id": task["id"],
+                    "task_name": task["name"],
+                    "allocation": allocation
+                })
+    
+    # Calculate utilization status
+    for resource_name, data in resource_utilization.items():
+        if data["total_allocation"] > 100:
+            data["status"] = "overallocated"
+        elif data["total_allocation"] > 80:
+            data["status"] = "high_utilization"
+        elif data["total_allocation"] > 50:
+            data["status"] = "moderate_utilization"
+        else:
+            data["status"] = "low_utilization"
+    
+    return {
+        "resource_utilization": resource_utilization,
+        "summary": {
+            "total_resources": len(resource_utilization),
+            "overallocated": len([r for r in resource_utilization.values() if r.get("status") == "overallocated"]),
+            "total_cost": sum([r["total_cost"] for r in resource_utilization.values()])
+        }
+    }
+
+# Enhanced milestone endpoints
+@app.get("/api/projects/{project_id}/milestones")
+async def get_project_milestones(project_id: str, current_user: User = Depends(get_current_user)):
+    """Get all milestones for a project"""
+    milestones = []
+    cursor = db.milestones.find({"project_id": project_id})
+    
+    async for milestone in cursor:
+        milestone["_id"] = str(milestone["_id"])
+        milestones.append(milestone)
+    
+    return milestones
+
+@app.post("/api/projects/{project_id}/milestones")
+async def create_milestone(
+    project_id: str,
+    milestone_data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new milestone"""
+    milestone_dict = milestone_data.copy()
+    milestone_dict.update({
+        "id": str(uuid.uuid4()),
+        "project_id": project_id,
+        "created_by": current_user.id,
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc)
+    })
+    
+    await db.milestones.insert_one(milestone_dict)
+    milestone_dict["_id"] = str(milestone_dict["_id"])
+    return milestone_dict
 @app.on_event("startup")
 async def startup_event():
     """Initialize the application"""
