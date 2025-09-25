@@ -2613,6 +2613,243 @@ async def delete_milestone(
     await db.milestones.delete_one({"id": milestone_id})
     return {"message": "Milestone deleted successfully"}
 
+# Communication Plan Routes
+@app.get("/api/projects/{project_id}/communication-plans", response_model=List[CommunicationPlan])
+async def get_project_communication_plans(project_id: str, current_user: User = Depends(get_current_user)):
+    """Get all communication plans for a project"""
+    communication_plans = []
+    cursor = db.communication_plans.find({"project_id": project_id})
+    
+    async for plan in cursor:
+        plan["_id"] = str(plan["_id"])
+        communication_plans.append(CommunicationPlan(**plan))
+    
+    return communication_plans
+
+@app.post("/api/projects/{project_id}/communication-plans", response_model=CommunicationPlan)
+async def create_communication_plan(
+    project_id: str,
+    plan_data: CommunicationPlanBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new communication plan"""
+    # Ensure project exists
+    project = await db.projects.find_one({"id": project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    plan_data.project_id = project_id
+    
+    plan_dict = plan_data.dict()
+    plan_dict["id"] = str(uuid.uuid4())
+    plan_dict["created_by"] = current_user.id
+    plan_dict["created_at"] = datetime.now(timezone.utc)
+    plan_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.communication_plans.insert_one(plan_dict)
+    plan_dict["_id"] = str(plan_dict.get("_id"))
+    
+    return CommunicationPlan(**plan_dict)
+
+@app.put("/api/projects/{project_id}/communication-plans/{plan_id}", response_model=CommunicationPlan)
+async def update_communication_plan(
+    project_id: str,
+    plan_id: str,
+    plan_update: CommunicationPlanBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Update a communication plan"""
+    plan = await db.communication_plans.find_one({"id": plan_id, "project_id": project_id})
+    
+    if not plan:
+        raise HTTPException(status_code=404, detail="Communication plan not found")
+    
+    update_dict = plan_update.dict(exclude_unset=True)
+    update_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.communication_plans.update_one(
+        {"id": plan_id},
+        {"$set": update_dict}
+    )
+    
+    updated_plan = await db.communication_plans.find_one({"id": plan_id})
+    updated_plan["_id"] = str(updated_plan["_id"])
+    
+    return CommunicationPlan(**updated_plan)
+
+@app.delete("/api/projects/{project_id}/communication-plans/{plan_id}")
+async def delete_communication_plan(
+    project_id: str,
+    plan_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Delete a communication plan"""
+    plan = await db.communication_plans.find_one({"id": plan_id, "project_id": project_id})
+    
+    if not plan:
+        raise HTTPException(status_code=404, detail="Communication plan not found")
+    
+    await db.communication_plans.delete_one({"id": plan_id})
+    return {"message": "Communication plan deleted successfully"}
+
+# Quality Requirements Routes
+@app.get("/api/projects/{project_id}/quality-requirements", response_model=List[QualityRequirement])
+async def get_project_quality_requirements(project_id: str, current_user: User = Depends(get_current_user)):
+    """Get all quality requirements for a project"""
+    quality_requirements = []
+    cursor = db.quality_requirements.find({"project_id": project_id})
+    
+    async for requirement in cursor:
+        requirement["_id"] = str(requirement["_id"])
+        quality_requirements.append(QualityRequirement(**requirement))
+    
+    return quality_requirements
+
+@app.post("/api/projects/{project_id}/quality-requirements", response_model=QualityRequirement)
+async def create_quality_requirement(
+    project_id: str,
+    requirement_data: QualityRequirementBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new quality requirement"""
+    # Ensure project exists
+    project = await db.projects.find_one({"id": project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    requirement_data.project_id = project_id
+    
+    requirement_dict = requirement_data.dict()
+    requirement_dict["id"] = str(uuid.uuid4())
+    requirement_dict["created_by"] = current_user.id
+    requirement_dict["created_at"] = datetime.now(timezone.utc)
+    requirement_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.quality_requirements.insert_one(requirement_dict)
+    requirement_dict["_id"] = str(requirement_dict.get("_id"))
+    
+    return QualityRequirement(**requirement_dict)
+
+@app.put("/api/projects/{project_id}/quality-requirements/{requirement_id}", response_model=QualityRequirement)
+async def update_quality_requirement(
+    project_id: str,
+    requirement_id: str,
+    requirement_update: QualityRequirementBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Update a quality requirement"""
+    requirement = await db.quality_requirements.find_one({"id": requirement_id, "project_id": project_id})
+    
+    if not requirement:
+        raise HTTPException(status_code=404, detail="Quality requirement not found")
+    
+    update_dict = requirement_update.dict(exclude_unset=True)
+    update_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.quality_requirements.update_one(
+        {"id": requirement_id},
+        {"$set": update_dict}
+    )
+    
+    updated_requirement = await db.quality_requirements.find_one({"id": requirement_id})
+    updated_requirement["_id"] = str(updated_requirement["_id"])
+    
+    return QualityRequirement(**updated_requirement)
+
+@app.delete("/api/projects/{project_id}/quality-requirements/{requirement_id}")
+async def delete_quality_requirement(
+    project_id: str,
+    requirement_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Delete a quality requirement"""
+    requirement = await db.quality_requirements.find_one({"id": requirement_id, "project_id": project_id})
+    
+    if not requirement:
+        raise HTTPException(status_code=404, detail="Quality requirement not found")
+    
+    await db.quality_requirements.delete_one({"id": requirement_id})
+    return {"message": "Quality requirement deleted successfully"}
+
+# Procurement Items Routes
+@app.get("/api/projects/{project_id}/procurement-items", response_model=List[ProcurementItem])
+async def get_project_procurement_items(project_id: str, current_user: User = Depends(get_current_user)):
+    """Get all procurement items for a project"""
+    procurement_items = []
+    cursor = db.procurement_items.find({"project_id": project_id})
+    
+    async for item in cursor:
+        item["_id"] = str(item["_id"])
+        procurement_items.append(ProcurementItem(**item))
+    
+    return procurement_items
+
+@app.post("/api/projects/{project_id}/procurement-items", response_model=ProcurementItem)
+async def create_procurement_item(
+    project_id: str,
+    item_data: ProcurementItemBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new procurement item"""
+    # Ensure project exists
+    project = await db.projects.find_one({"id": project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    item_data.project_id = project_id
+    
+    item_dict = item_data.dict()
+    item_dict["id"] = str(uuid.uuid4())
+    item_dict["created_by"] = current_user.id
+    item_dict["created_at"] = datetime.now(timezone.utc)
+    item_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.procurement_items.insert_one(item_dict)
+    item_dict["_id"] = str(item_dict.get("_id"))
+    
+    return ProcurementItem(**item_dict)
+
+@app.put("/api/projects/{project_id}/procurement-items/{item_id}", response_model=ProcurementItem)
+async def update_procurement_item(
+    project_id: str,
+    item_id: str,
+    item_update: ProcurementItemBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Update a procurement item"""
+    item = await db.procurement_items.find_one({"id": item_id, "project_id": project_id})
+    
+    if not item:
+        raise HTTPException(status_code=404, detail="Procurement item not found")
+    
+    update_dict = item_update.dict(exclude_unset=True)
+    update_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.procurement_items.update_one(
+        {"id": item_id},
+        {"$set": update_dict}
+    )
+    
+    updated_item = await db.procurement_items.find_one({"id": item_id})
+    updated_item["_id"] = str(updated_item["_id"])
+    
+    return ProcurementItem(**updated_item)
+
+@app.delete("/api/projects/{project_id}/procurement-items/{item_id}")
+async def delete_procurement_item(
+    project_id: str,
+    item_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Delete a procurement item"""
+    item = await db.procurement_items.find_one({"id": item_id, "project_id": project_id})
+    
+    if not item:
+        raise HTTPException(status_code=404, detail="Procurement item not found")
+    
+    await db.procurement_items.delete_one({"id": item_id})
+    return {"message": "Procurement item deleted successfully"}
+
 # Feasibility Study Models
 class FeasibilityStudyBase(BaseModel):
     project_id: str
