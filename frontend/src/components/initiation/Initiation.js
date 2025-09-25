@@ -273,6 +273,32 @@ const Initiation = () => {
               >
                 Stakeholder Register
               </NavLink>
+              <NavLink
+                to={`/initiation/project/${currentProjectId}/risks`}
+                className={({ isActive }) =>
+                  `whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                    isActive || location.pathname.includes('risks')
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`
+                }
+                data-testid="risks-tab"
+              >
+                Risk Log
+              </NavLink>
+              <NavLink
+                to={`/initiation/project/${currentProjectId}/feasibility`}
+                className={({ isActive }) =>
+                  `whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                    isActive || location.pathname.includes('feasibility')
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`
+                }
+                data-testid="feasibility-tab"
+              >
+                Feasibility Study
+              </NavLink>
             </nav>
           </div>
         </div>
