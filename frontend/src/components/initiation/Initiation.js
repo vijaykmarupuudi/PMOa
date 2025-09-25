@@ -7,6 +7,7 @@ import BusinessCase from './BusinessCase';
 import StakeholderRegister from './StakeholderRegister';
 import RiskLog from './RiskLog';
 import FeasibilityStudy from './FeasibilityStudy';
+import ProjectPhaseManager from '../common/ProjectPhaseManager';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
