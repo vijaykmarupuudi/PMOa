@@ -1035,18 +1035,19 @@ async def init_default_templates():
             print(f"Default template created: {template['name']}")
 
 async def init_sample_projects():
-    """Initialize sample projects for demonstration"""
+    """Initialize comprehensive sample projects for all phases"""
     sample_projects = [
+        # PLANNING PHASE PROJECT
         {
             "id": str(uuid.uuid4()),
             "name": "Customer Portal Redesign",
-            "description": "Modernize the customer portal with improved UX/UI, mobile responsiveness, and enhanced security features",
+            "description": "Modernize the customer portal with improved UX/UI, mobile responsiveness, and enhanced security features. Focus on user experience optimization and performance improvements.",
             "status": ProjectStatus.PLANNING,
             "priority": Priority.HIGH,
             "start_date": datetime(2025, 2, 1, 0, 0, 0, tzinfo=timezone.utc),
             "end_date": datetime(2025, 8, 31, 0, 0, 0, tzinfo=timezone.utc),
             "budget": 250000.0,
-            "stakeholders": [],
+            "stakeholders": ["Sarah Johnson", "Michael Chen", "UX Team", "Security Team"],
             "tags": ["web_development", "ux_design", "security", "mobile"],
             "project_manager_id": "",  # Will be set to PM demo user
             "created_by": "",  # Will be set to PM demo user
