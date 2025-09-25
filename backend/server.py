@@ -1974,7 +1974,7 @@ async def get_projects(
         
         projects = []
         async for project_doc in projects_cursor:
-            project_doc["id"] = project_doc["_id"]
+            project_doc["id"] = str(project_doc["_id"])
             del project_doc["_id"]
             projects.append(project_doc)
         
@@ -2023,7 +2023,7 @@ async def get_projects_by_module(
         
         projects = []
         async for project_doc in projects_cursor:
-            project_doc["id"] = project_doc["_id"]
+            project_doc["id"] = str(project_doc["_id"])
             del project_doc["_id"]
             projects.append(project_doc)
         
