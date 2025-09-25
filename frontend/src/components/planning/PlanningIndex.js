@@ -172,7 +172,7 @@ const PlanningIndex = () => {
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">Select a Project for Planning</h2>
           <p className="mt-1 text-sm text-gray-500">
-            Choose a project to access planning tools and features
+            Choose a project that has completed initiation or is currently in planning phase
           </p>
         </div>
 
