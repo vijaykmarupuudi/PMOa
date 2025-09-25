@@ -199,6 +199,16 @@ export default function ProjectDetail() {
         </div>
       </div>
 
+      {/* Project Status Manager */}
+      <ProjectStatusManager 
+        project={project} 
+        onStatusUpdate={(newStatus) => {
+          setProject(prev => ({ ...prev, status: newStatus }));
+          // Refresh project data
+          fetchProject();
+        }}
+      />
+
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
