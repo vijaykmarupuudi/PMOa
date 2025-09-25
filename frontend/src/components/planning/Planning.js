@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import WorkBreakdownStructure from './WorkBreakdownStructure';
 import RiskManagement from './RiskManagement';
 import BudgetPlanning from './BudgetPlanning';
+import TimelineGantt from './TimelineGantt';
 import { 
   ClipboardDocumentListIcon,
   ExclamationTriangleIcon,
