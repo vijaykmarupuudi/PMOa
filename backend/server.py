@@ -969,11 +969,156 @@ async def init_default_templates():
             await db.templates.insert_one(template)
             print(f"Default template created: {template['name']}")
 
+async def init_sample_projects():
+    """Initialize sample projects for demonstration"""
+    sample_projects = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Customer Portal Redesign",
+            "description": "Modernize the customer portal with improved UX/UI, mobile responsiveness, and enhanced security features",
+            "status": ProjectStatus.PLANNING,
+            "priority": Priority.HIGH,
+            "start_date": datetime(2025, 2, 1, 0, 0, 0, tzinfo=timezone.utc),
+            "end_date": datetime(2025, 8, 31, 0, 0, 0, tzinfo=timezone.utc),
+            "budget": 250000.0,
+            "stakeholders": [],
+            "tags": ["web_development", "ux_design", "security", "mobile"],
+            "project_manager_id": "",  # Will be set to PM demo user
+            "created_by": "",  # Will be set to PM demo user
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+            "completion_percentage": 25.0,
+            "project_type": "agile",
+            "industry": "Technology",
+            "complexity_level": "high",
+            "team_size": 8,
+            "duration_estimate": "7 months",
+            "budget_range": "$200K - $300K",
+            "methodology": "agile"
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "ERP System Integration",
+            "description": "Integrate new ERP system with existing CRM and financial systems to streamline operations",
+            "status": ProjectStatus.EXECUTION,
+            "priority": Priority.CRITICAL,
+            "start_date": datetime(2024, 11, 1, 0, 0, 0, tzinfo=timezone.utc),
+            "end_date": datetime(2025, 5, 30, 0, 0, 0, tzinfo=timezone.utc),
+            "budget": 450000.0,
+            "stakeholders": [],
+            "tags": ["erp", "integration", "systems", "automation"],
+            "project_manager_id": "",  # Will be set to PM demo user
+            "created_by": "",  # Will be set to PM demo user
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+            "completion_percentage": 65.0,
+            "project_type": "waterfall",
+            "industry": "Manufacturing",
+            "complexity_level": "high",
+            "team_size": 12,
+            "duration_estimate": "7 months",
+            "budget_range": "$400K - $500K",
+            "methodology": "waterfall"
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Office Space Renovation",
+            "description": "Renovate headquarters office space to support hybrid work model with collaborative spaces and updated technology",
+            "status": ProjectStatus.INITIATION,
+            "priority": Priority.MEDIUM,
+            "start_date": datetime(2025, 3, 15, 0, 0, 0, tzinfo=timezone.utc),
+            "end_date": datetime(2025, 7, 15, 0, 0, 0, tzinfo=timezone.utc),
+            "budget": 150000.0,
+            "stakeholders": [],
+            "tags": ["renovation", "facilities", "hybrid_work", "collaboration"],
+            "project_manager_id": "",  # Will be set to PM demo user
+            "created_by": "",  # Will be set to PM demo user
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+            "completion_percentage": 5.0,
+            "project_type": "standard",
+            "industry": "General",
+            "complexity_level": "medium",
+            "team_size": 6,
+            "duration_estimate": "4 months",
+            "budget_range": "$100K - $200K",
+            "methodology": "hybrid"
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Mobile App Development",
+            "description": "Develop native mobile applications for iOS and Android to extend our services to mobile users",
+            "status": ProjectStatus.COMPLETED,
+            "priority": Priority.HIGH,
+            "start_date": datetime(2024, 6, 1, 0, 0, 0, tzinfo=timezone.utc),
+            "end_date": datetime(2024, 12, 31, 0, 0, 0, tzinfo=timezone.utc),
+            "budget": 320000.0,
+            "stakeholders": [],
+            "tags": ["mobile", "ios", "android", "app_development"],
+            "project_manager_id": "",  # Will be set to PM demo user
+            "created_by": "",  # Will be set to PM demo user
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+            "completion_percentage": 100.0,
+            "project_type": "agile",
+            "industry": "Technology",
+            "complexity_level": "high",
+            "team_size": 10,
+            "duration_estimate": "7 months",
+            "budget_range": "$300K - $350K",
+            "methodology": "agile"
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Data Migration Project",
+            "description": "Migrate legacy data from multiple systems to new cloud-based data warehouse with improved analytics capabilities",
+            "status": ProjectStatus.MONITORING,
+            "priority": Priority.HIGH,
+            "start_date": datetime(2024, 9, 1, 0, 0, 0, tzinfo=timezone.utc),
+            "end_date": datetime(2025, 3, 31, 0, 0, 0, tzinfo=timezone.utc),
+            "budget": 280000.0,
+            "stakeholders": [],
+            "tags": ["data_migration", "cloud", "analytics", "warehouse"],
+            "project_manager_id": "",  # Will be set to PM demo user
+            "created_by": "",  # Will be set to PM demo user
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+            "completion_percentage": 80.0,
+            "project_type": "waterfall",
+            "industry": "Technology",
+            "complexity_level": "high",
+            "team_size": 8,
+            "duration_estimate": "7 months",
+            "budget_range": "$250K - $300K",
+            "methodology": "waterfall"
+        }
+    ]
+    
+    # Get the PM demo user ID
+    pm_user = await db.users.find_one({"email": "pm@projecthub.com"})
+    if not pm_user:
+        print("PM demo user not found, skipping sample projects")
+        return
+    
+    pm_id = pm_user["id"]
+    
+    # Set PM as project manager and creator for all sample projects
+    for project in sample_projects:
+        project["project_manager_id"] = pm_id
+        project["created_by"] = pm_id
+        
+        # Check if project already exists
+        existing = await db.projects.find_one({"name": project["name"]})
+        if not existing:
+            await db.projects.insert_one(project)
+            print(f"Sample project created: {project['name']}")
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize the application"""
     await init_demo_users()
     await init_default_templates()
+    await init_sample_projects()
     print("ProjectHub PMO API started successfully!")
 
 # Routes
