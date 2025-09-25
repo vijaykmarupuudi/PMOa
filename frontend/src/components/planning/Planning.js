@@ -247,6 +247,18 @@ const Planning = () => {
               <p className="text-xs text-green-600">✅ Available</p>
             </div>
           </div>
+
+          <div className="flex items-center space-x-3">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <CalendarDaysIcon className="w-5 h-5 text-green-600" />
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-900">Timeline & Gantt</p>
+              <p className="text-xs text-green-600">✅ Available</p>
+            </div>
+          </div>
         </div>
 
         <div className="mt-4 pt-4 border-t border-gray-200">
