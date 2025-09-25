@@ -5,6 +5,8 @@ import WorkBreakdownStructure from './WorkBreakdownStructure';
 import RiskManagement from './RiskManagement';
 import BudgetPlanning from './BudgetPlanning';
 import TimelineGantt from './TimelineGantt';
+import CommunicationPlan from './CommunicationPlan';
+import QualityProcurement from './QualityProcurement';
 import { 
   ClipboardDocumentListIcon,
   ExclamationTriangleIcon,
