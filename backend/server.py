@@ -2161,6 +2161,156 @@ async def update_risk(
 
     return Risk(**updated_risk)
 
+# Timeline & Gantt Chart Routes
+@app.get("/api/projects/{project_id}/timeline/tasks", response_model=List[TimelineTask])
+async def get_project_timeline_tasks(project_id: str, current_user: User = Depends(get_current_user)):
+    """Get all timeline tasks for a project"""
+    tasks = []
+    cursor = db.timeline_tasks.find({"project_id": project_id})
+
+    async for task in cursor:
+        task["_id"] = str(task["_id"])
+        tasks.append(TimelineTask(**task))
+
+    return tasks
+
+@app.post("/api/projects/{project_id}/timeline/tasks", response_model=TimelineTask)
+async def create_timeline_task(
+    project_id: str,
+    task_data: TimelineTaskBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new timeline task"""
+    # Ensure project_id matches
+    task_data.project_id = project_id
+
+    task_dict = task_data.dict()
+    task_dict["id"] = str(uuid.uuid4())
+    task_dict["created_by"] = current_user.id
+    task_dict["created_at"] = datetime.now(timezone.utc)
+    task_dict["updated_at"] = datetime.now(timezone.utc)
+
+    await db.timeline_tasks.insert_one(task_dict)
+    task_dict["_id"] = str(task_dict.get("_id"))
+
+    return TimelineTask(**task_dict)
+
+@app.put("/api/projects/{project_id}/timeline/tasks/{task_id}", response_model=TimelineTask)
+async def update_timeline_task(
+    project_id: str,
+    task_id: str,
+    task_update: TimelineTaskBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Update a timeline task"""
+    task = await db.timeline_tasks.find_one({"id": task_id, "project_id": project_id})
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Timeline task not found")
+
+    update_dict = task_update.dict(exclude_unset=True)
+    update_dict["updated_at"] = datetime.now(timezone.utc)
+
+    await db.timeline_tasks.update_one(
+        {"id": task_id},
+        {"$set": update_dict}
+    )
+
+    updated_task = await db.timeline_tasks.find_one({"id": task_id})
+    updated_task["_id"] = str(updated_task["_id"])
+
+    return TimelineTask(**updated_task)
+
+@app.delete("/api/projects/{project_id}/timeline/tasks/{task_id}")
+async def delete_timeline_task(
+    project_id: str,
+    task_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Delete a timeline task"""
+    task = await db.timeline_tasks.find_one({"id": task_id, "project_id": project_id})
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Timeline task not found")
+
+    await db.timeline_tasks.delete_one({"id": task_id})
+    return {"message": "Timeline task deleted successfully"}
+
+# Milestone Routes
+@app.get("/api/projects/{project_id}/timeline/milestones", response_model=List[Milestone])
+async def get_project_milestones(project_id: str, current_user: User = Depends(get_current_user)):
+    """Get all milestones for a project"""
+    milestones = []
+    cursor = db.milestones.find({"project_id": project_id})
+
+    async for milestone in cursor:
+        milestone["_id"] = str(milestone["_id"])
+        milestones.append(Milestone(**milestone))
+
+    return milestones
+
+@app.post("/api/projects/{project_id}/timeline/milestones", response_model=Milestone)
+async def create_milestone(
+    project_id: str,
+    milestone_data: MilestoneBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new milestone"""
+    # Ensure project_id matches
+    milestone_data.project_id = project_id
+
+    milestone_dict = milestone_data.dict()
+    milestone_dict["id"] = str(uuid.uuid4())
+    milestone_dict["created_by"] = current_user.id
+    milestone_dict["created_at"] = datetime.now(timezone.utc)
+    milestone_dict["updated_at"] = datetime.now(timezone.utc)
+
+    await db.milestones.insert_one(milestone_dict)
+    milestone_dict["_id"] = str(milestone_dict.get("_id"))
+
+    return Milestone(**milestone_dict)
+
+@app.put("/api/projects/{project_id}/timeline/milestones/{milestone_id}", response_model=Milestone)
+async def update_milestone(
+    project_id: str,
+    milestone_id: str,
+    milestone_update: MilestoneBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Update a milestone"""
+    milestone = await db.milestones.find_one({"id": milestone_id, "project_id": project_id})
+
+    if not milestone:
+        raise HTTPException(status_code=404, detail="Milestone not found")
+
+    update_dict = milestone_update.dict(exclude_unset=True)
+    update_dict["updated_at"] = datetime.now(timezone.utc)
+
+    await db.milestones.update_one(
+        {"id": milestone_id},
+        {"$set": update_dict}
+    )
+
+    updated_milestone = await db.milestones.find_one({"id": milestone_id})
+    updated_milestone["_id"] = str(updated_milestone["_id"])
+
+    return Milestone(**updated_milestone)
+
+@app.delete("/api/projects/{project_id}/timeline/milestones/{milestone_id}")
+async def delete_milestone(
+    project_id: str,
+    milestone_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Delete a milestone"""
+    milestone = await db.milestones.find_one({"id": milestone_id, "project_id": project_id})
+
+    if not milestone:
+        raise HTTPException(status_code=404, detail="Milestone not found")
+
+    await db.milestones.delete_one({"id": milestone_id})
+    return {"message": "Milestone deleted successfully"}
+
 # Feasibility Study Models
 class FeasibilityStudyBase(BaseModel):
     project_id: str
