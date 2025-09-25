@@ -401,6 +401,15 @@ const BusinessCase = () => {
           )}
         </form>
       </div>
+      
+      {/* Template Selector Modal */}
+      <TemplateSelector
+        isOpen={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+        templateType="business_case"
+        projectId={projectId}
+        onTemplateApplied={handleTemplateApplied}
+      />
     </div>
   );
 };
