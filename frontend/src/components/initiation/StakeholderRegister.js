@@ -13,6 +13,7 @@ const StakeholderRegister = () => {
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   
   const [formData, setFormData] = useState({
     project_id: projectId,
