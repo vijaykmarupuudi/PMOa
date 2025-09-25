@@ -222,6 +222,9 @@ const Templates = () => {
               <option value="all">All Types</option>
               <option value="project_charter">Project Charter</option>
               <option value="business_case">Business Case</option>
+              <option value="stakeholder_register">Stakeholder Register</option>
+              <option value="risk_log">Risk Log</option>
+              <option value="feasibility_study">Feasibility Study</option>
             </select>
           </div>
           
