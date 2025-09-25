@@ -134,6 +134,12 @@ const BusinessCase = () => {
     setSaving(false);
   };
 
+  const handleTemplateApplied = (result) => {
+    // Refresh the business case data after template is applied
+    fetchBusinessCase();
+    toast.success('Template applied! Business case has been updated.');
+  };
+
   const renderArrayField = (label, field, placeholder) => (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-2">
