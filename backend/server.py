@@ -210,6 +210,146 @@ class Project(ProjectBase):
     updated_at: datetime
     completion_percentage: float = 0.0
 
+# Module 2: Planning Models
+
+# Work Breakdown Structure (WBS) Models
+class WBSTaskStatus(str, Enum):
+    NOT_STARTED = "not_started"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    ON_HOLD = "on_hold"
+    CANCELLED = "cancelled"
+
+class WBSTaskBase(BaseModel):
+    project_id: str
+    name: str
+    description: Optional[str] = ""
+    parent_id: Optional[str] = None  # For hierarchical structure
+    level: int = 1  # WBS level (1 = top level, 2 = sub-task, etc.)
+    wbs_code: str  # e.g., "1.1.2"
+    status: WBSTaskStatus = WBSTaskStatus.NOT_STARTED
+    assigned_to: Optional[str] = None
+    estimated_hours: Optional[float] = 0.0
+    actual_hours: Optional[float] = 0.0
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+    dependencies: List[str] = []  # List of task IDs this task depends on
+    deliverables: List[str] = []
+    notes: Optional[str] = ""
+
+class WBSTask(WBSTaskBase):
+    id: str
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+    completion_percentage: float = 0.0
+
+# Risk Management Models
+class RiskProbability(str, Enum):
+    VERY_LOW = "very_low"
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    VERY_HIGH = "very_high"
+
+class RiskImpact(str, Enum):
+    VERY_LOW = "very_low"
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    VERY_HIGH = "very_high"
+
+class RiskStatus(str, Enum):
+    IDENTIFIED = "identified"
+    ASSESSED = "assessed"
+    MITIGATED = "mitigated"
+    CLOSED = "closed"
+    OCCURRED = "occurred"
+
+class RiskBase(BaseModel):
+    project_id: str
+    title: str
+    description: str
+    category: str  # Technical, Schedule, Budget, Resource, etc.
+    probability: RiskProbability
+    impact: RiskImpact
+    status: RiskStatus = RiskStatus.IDENTIFIED
+    owner: Optional[str] = None
+    mitigation_strategy: Optional[str] = ""
+    contingency_plan: Optional[str] = ""
+    target_date: Optional[datetime] = None
+    actual_date: Optional[datetime] = None
+
+class Risk(RiskBase):
+    id: str
+    risk_score: float  # Calculated: probability * impact
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+
+# Budget Planning Models
+class BudgetCategory(str, Enum):
+    LABOR = "labor"
+    EQUIPMENT = "equipment"
+    MATERIALS = "materials"
+    TRAVEL = "travel"
+    TRAINING = "training"
+    SOFTWARE = "software"
+    CONTINGENCY = "contingency"
+    OTHER = "other"
+
+class BudgetItemBase(BaseModel):
+    project_id: str
+    category: BudgetCategory
+    item_name: str
+    description: Optional[str] = ""
+    estimated_cost: float
+    actual_cost: Optional[float] = 0.0
+    vendor: Optional[str] = ""
+    purchase_date: Optional[datetime] = None
+    notes: Optional[str] = ""
+
+class BudgetItem(BudgetItemBase):
+    id: str
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+
+# Communication Plan Models
+class CommunicationFrequency(str, Enum):
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    BIWEEKLY = "biweekly"
+    MONTHLY = "monthly"
+    QUARTERLY = "quarterly"
+    AS_NEEDED = "as_needed"
+
+class CommunicationMethod(str, Enum):
+    EMAIL = "email"
+    MEETING = "meeting"
+    REPORT = "report"
+    DASHBOARD = "dashboard"
+    PHONE = "phone"
+    CHAT = "chat"
+
+class CommunicationPlanBase(BaseModel):
+    project_id: str
+    stakeholder_group: str
+    information_type: str
+    method: CommunicationMethod
+    frequency: CommunicationFrequency
+    responsible_person: str
+    audience: List[str] = []
+    purpose: str
+    format: Optional[str] = ""
+    delivery_date: Optional[datetime] = None
+
+class CommunicationPlan(CommunicationPlanBase):
+    id: str
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+
 # Helper functions
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
