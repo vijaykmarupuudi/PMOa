@@ -1185,7 +1185,7 @@ async def init_sample_timeline_data():
                 "description": "Implement REST APIs, database integration, authentication, and business logic",
                 "start_date": datetime(2025, 2, 1, 0, 0, 0, tzinfo=timezone.utc),
                 "end_date": datetime(2025, 4, 30, 0, 0, 0, tzinfo=timezone.utc),
-                "status": "in_progress",
+                "status": "pending",
                 "assigned_to": "Backend Team",
                 "priority": "high",
                 "progress": 45,
