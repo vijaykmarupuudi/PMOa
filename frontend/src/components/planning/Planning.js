@@ -49,10 +49,10 @@ const Planning = () => {
     },
     {
       id: 'timeline',
-      name: 'Timeline & Gantt',
+      name: 'Enhanced Timeline & Gantt',
       icon: CalendarDaysIcon,
-      component: TimelineGantt,
-      description: 'Visual project timeline and dependencies'
+      component: EnhancedTimelineGantt,
+      description: 'Advanced visual roadmaps with resource allocation and critical path analysis'
     },
     {
       id: 'communication',
