@@ -54,6 +54,12 @@ const StakeholderRegister = () => {
     setLoading(false);
   };
 
+  const handleTemplateApplied = (result) => {
+    // Refresh stakeholders data after template is applied
+    fetchStakeholders();
+    toast.success('Template applied! Stakeholders have been added.');
+  };
+
   const resetForm = () => {
     setFormData({
       project_id: projectId,
