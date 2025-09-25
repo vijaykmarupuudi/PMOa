@@ -58,14 +58,14 @@ const Planning = () => {
       id: 'communication',
       name: 'Communication Plan',
       icon: ChatBubbleLeftRightIcon,
-      component: () => <ComingSoonPlaceholder feature="Communication Plan" />,
+      component: CommunicationPlan,
       description: 'Stakeholder communication planning'
     },
     {
       id: 'quality',
       name: 'Quality & Procurement',
       icon: DocumentTextIcon,
-      component: () => <ComingSoonPlaceholder feature="Quality & Procurement Templates" />,
+      component: QualityProcurement,
       description: 'Quality assurance and procurement planning'
     }
   ];
