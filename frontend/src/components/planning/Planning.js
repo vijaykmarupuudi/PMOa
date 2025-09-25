@@ -261,15 +261,39 @@ const Planning = () => {
               <p className="text-xs text-green-600">✅ Available</p>
             </div>
           </div>
+
+          <div className="flex items-center space-x-3">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <ChatBubbleLeftRightIcon className="w-5 h-5 text-green-600" />
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-900">Communication Plan</p>
+              <p className="text-xs text-green-600">✅ Available</p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <DocumentTextIcon className="w-5 h-5 text-green-600" />
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-900">Quality & Procurement</p>
+              <p className="text-xs text-green-600">✅ Available</p>
+            </div>
+          </div>
         </div>
 
         <div className="mt-4 pt-4 border-t border-gray-200">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-500">Module 2 Completion:</span>
-            <span className="font-medium text-blue-600">67% Complete (4 of 6 features)</span>
+            <span className="font-medium text-green-600">100% Complete (6 of 6 features)</span>
           </div>
           <div className="mt-2 bg-gray-200 rounded-full h-2">
-            <div className="bg-blue-600 h-2 rounded-full" style={{ width: '67%' }}></div>
+            <div className="bg-green-600 h-2 rounded-full" style={{ width: '100%' }}></div>
           </div>
         </div>
       </div>
