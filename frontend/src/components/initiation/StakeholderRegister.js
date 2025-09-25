@@ -477,13 +477,21 @@ const StakeholderRegister = () => {
           {stakeholders.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500">No stakeholders added yet.</p>
-              <button
-                onClick={() => setShowForm(true)}
-                className="mt-2 text-blue-600 hover:text-blue-800"
-                data-testid="add-first-stakeholder-btn"
-              >
-                Add your first stakeholder
-              </button>
+              <div className="mt-4 space-x-3">
+                <button
+                  onClick={() => setShowTemplateSelector(true)}
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  📋 Use Template
+                </button>
+                <button
+                  onClick={() => setShowForm(true)}
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                  data-testid="add-first-stakeholder-btn"
+                >
+                  Add Stakeholder
+                </button>
+              </div>
             </div>
           ) : (
             <div className="overflow-x-auto">
