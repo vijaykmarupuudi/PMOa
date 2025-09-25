@@ -107,15 +107,15 @@ const PlanningIndex = () => {
       name: 'Communication Plan',
       description: 'Stakeholder communication planning',
       icon: ChatBubbleLeftRightIcon,
-      status: 'coming_soon',
-      color: 'text-gray-400'
+      status: 'available',
+      color: 'text-green-600'
     },
     {
       name: 'Quality & Procurement',
       description: 'Quality assurance and procurement planning',
       icon: DocumentTextIcon,
-      status: 'coming_soon',
-      color: 'text-gray-400'
+      status: 'available',
+      color: 'text-green-600'
     }
   ];
 
