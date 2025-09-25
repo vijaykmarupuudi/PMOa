@@ -2945,7 +2945,7 @@ async def get_projects_available_for_phase(
         raise HTTPException(status_code=500, detail=str(e))
 
 # Timeline & Gantt Chart Routes
-@app.get("/api/projects/{project_id}/timeline/tasks", response_model=List[TimelineTask])
+@app.get("/api/projects/{project_id}/timeline/tasks")
 async def get_project_timeline_tasks(project_id: str, current_user: User = Depends(get_current_user)):
     """Get all timeline tasks for a project"""
     tasks = []
@@ -2953,7 +2953,10 @@ async def get_project_timeline_tasks(project_id: str, current_user: User = Depen
 
     async for task in cursor:
         task["_id"] = str(task["_id"])
-        tasks.append(TimelineTask(**task))
+        # Fix status if needed
+        if task.get("status") == "pending":
+            task["status"] = "not_started"
+        tasks.append(task)
 
     return tasks
 
