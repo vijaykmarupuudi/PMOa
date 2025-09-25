@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
+import TemplateSelector from './TemplateSelector';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
