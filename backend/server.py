@@ -2032,6 +2032,173 @@ async def create_budget_item(
     budget_doc["_id"] = str(budget_doc.get("_id"))
     return BudgetItem(**budget_doc)
 
+# Risk Management Routes
+@app.post("/api/risks", response_model=Risk)
+async def create_risk(
+    risk_data: RiskBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new project risk"""
+    # Check if project exists
+    project = await db.projects.find_one({"id": risk_data.project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    # Calculate risk score
+    probability_score = {"very_low": 1, "low": 2, "medium": 3, "high": 4, "very_high": 5}
+    impact_score = {"very_low": 1, "low": 2, "medium": 3, "high": 4, "very_high": 5}
+    
+    prob_score = probability_score.get(risk_data.probability, 3)
+    imp_score = impact_score.get(risk_data.impact, 3)
+    calculated_risk_score = prob_score * imp_score
+
+    risk_dict = risk_data.dict()
+    risk_dict["id"] = str(uuid.uuid4())
+    risk_dict["risk_score"] = calculated_risk_score
+    risk_dict["created_by"] = current_user.id
+    risk_dict["created_at"] = datetime.now(timezone.utc)
+    risk_dict["updated_at"] = datetime.now(timezone.utc)
+
+    await db.risks.insert_one(risk_dict)
+    risk_dict["_id"] = str(risk_dict.get("_id"))
+
+    return Risk(**risk_dict)
+
+@app.get("/api/risks/project/{project_id}", response_model=List[Risk])
+async def get_project_risks(project_id: str, current_user: User = Depends(get_current_user)):
+    """Get all risks for a project"""
+    risks = []
+    cursor = db.risks.find({"project_id": project_id})
+
+    async for risk in cursor:
+        risk["_id"] = str(risk["_id"])
+        risks.append(Risk(**risk))
+
+    return risks
+
+@app.put("/api/risks/{risk_id}", response_model=Risk)
+async def update_risk(
+    risk_id: str,
+    risk_update: RiskBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Update a project risk"""
+    risk = await db.risks.find_one({"id": risk_id})
+
+    if not risk:
+        raise HTTPException(status_code=404, detail="Risk not found")
+
+    # Recalculate risk score
+    probability_score = {"very_low": 1, "low": 2, "medium": 3, "high": 4, "very_high": 5}
+    impact_score = {"very_low": 1, "low": 2, "medium": 3, "high": 4, "very_high": 5}
+    
+    prob_score = probability_score.get(risk_update.probability, 3)
+    imp_score = impact_score.get(risk_update.impact, 3)
+    calculated_risk_score = prob_score * imp_score
+
+    update_dict = risk_update.dict(exclude_unset=True)
+    update_dict["risk_score"] = calculated_risk_score
+    update_dict["updated_at"] = datetime.now(timezone.utc)
+
+    await db.risks.update_one(
+        {"id": risk_id},
+        {"$set": update_dict}
+    )
+
+    updated_risk = await db.risks.find_one({"id": risk_id})
+    updated_risk["_id"] = str(updated_risk["_id"])
+
+    return Risk(**updated_risk)
+
+# Feasibility Study Models
+class FeasibilityStudyBase(BaseModel):
+    project_id: str
+    executive_summary: str = ""
+    project_description: str = ""
+    objectives: List[str] = []
+    scope: str = ""
+    success_criteria: List[str] = []
+    technical_feasibility: Dict[str, Any] = {}
+    economic_feasibility: Dict[str, Any] = {}
+    operational_feasibility: Dict[str, Any] = {}
+    schedule_feasibility: Dict[str, Any] = {}
+    alternative_analysis: List[Dict[str, Any]] = []
+    recommendations: Dict[str, Any] = {}
+
+class FeasibilityStudy(FeasibilityStudyBase):
+    id: str
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+    status: str = "draft"
+
+# Feasibility Study Routes
+@app.post("/api/feasibility-study", response_model=FeasibilityStudy)
+async def create_feasibility_study(
+    study_data: FeasibilityStudyBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new feasibility study"""
+    # Check if user has permission
+    if current_user.role not in [UserRole.PROJECT_MANAGER, UserRole.EXECUTIVE]:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+
+    # Check if project exists
+    project = await db.projects.find_one({"id": study_data.project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    study_dict = study_data.dict()
+    study_dict["id"] = str(uuid.uuid4())
+    study_dict["created_by"] = current_user.id
+    study_dict["created_at"] = datetime.now(timezone.utc)
+    study_dict["updated_at"] = datetime.now(timezone.utc)
+
+    await db.feasibility_studies.insert_one(study_dict)
+    study_dict["_id"] = str(study_dict.get("_id"))
+
+    return FeasibilityStudy(**study_dict)
+
+@app.get("/api/feasibility-study/project/{project_id}", response_model=FeasibilityStudy)
+async def get_feasibility_study(project_id: str, current_user: User = Depends(get_current_user)):
+    """Get feasibility study for a project"""
+    study = await db.feasibility_studies.find_one({"project_id": project_id})
+
+    if not study:
+        raise HTTPException(status_code=404, detail="Feasibility study not found")
+
+    study["_id"] = str(study["_id"])
+    return FeasibilityStudy(**study)
+
+@app.put("/api/feasibility-study/{study_id}", response_model=FeasibilityStudy)
+async def update_feasibility_study(
+    study_id: str,
+    study_update: FeasibilityStudyBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Update a feasibility study"""
+    study = await db.feasibility_studies.find_one({"id": study_id})
+
+    if not study:
+        raise HTTPException(status_code=404, detail="Feasibility study not found")
+
+    # Check permissions
+    if current_user.role not in [UserRole.PROJECT_MANAGER, UserRole.EXECUTIVE]:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+
+    update_dict = study_update.dict(exclude_unset=True)
+    update_dict["updated_at"] = datetime.now(timezone.utc)
+
+    await db.feasibility_studies.update_one(
+        {"id": study_id},
+        {"$set": update_dict}
+    )
+
+    updated_study = await db.feasibility_studies.find_one({"id": study_id})
+    updated_study["_id"] = str(updated_study["_id"])
+
+    return FeasibilityStudy(**updated_study)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
