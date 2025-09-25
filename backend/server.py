@@ -1655,6 +1655,161 @@ async def use_template(template_id: str, current_user: User = Depends(get_curren
     
     return {"message": "Template usage recorded", "template_id": template_id}
 
+@app.post("/api/projects/{project_id}/apply-template/{template_id}")
+async def apply_template_to_project(
+    project_id: str,
+    template_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Apply a template to create project documents (Charter, Business Case, etc.)"""
+    # Verify project exists
+    project = await db.projects.find_one({"id": project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Verify template exists
+    template = await db.templates.find_one({"id": template_id})
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    
+    # Check permissions
+    if current_user.role not in [UserRole.PROJECT_MANAGER, UserRole.EXECUTIVE]:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+    
+    template_type = template["template_type"]
+    template_data = template["template_data"]
+    
+    result = {"applied": [], "errors": []}
+    
+    try:
+        if template_type == "project_charter":
+            # Create or update project charter
+            existing_charter = await db.project_charters.find_one({"project_id": project_id})
+            
+            charter_doc = {
+                "project_id": project_id,
+                "project_purpose": template_data.get("project_purpose", ""),
+                "project_description": template_data.get("project_description", ""),
+                "project_objectives": template_data.get("project_objectives", []),
+                "success_criteria": template_data.get("success_criteria", []),
+                "scope_inclusions": template_data.get("scope_inclusions", []),
+                "scope_exclusions": template_data.get("scope_exclusions", []),
+                "assumptions": template_data.get("assumptions", []),
+                "constraints": template_data.get("constraints", []),
+                "estimated_budget": project.get("budget", 0.0),
+                "estimated_timeline": f"{project.get('start_date', '')} to {project.get('end_date', '')}",
+                "key_milestones": template_data.get("key_milestones", []),
+                "updated_at": datetime.now(timezone.utc)
+            }
+            
+            if existing_charter:
+                await db.project_charters.update_one(
+                    {"project_id": project_id},
+                    {"$set": charter_doc}
+                )
+                result["applied"].append("Project Charter updated")
+            else:
+                charter_doc.update({
+                    "id": str(uuid.uuid4()),
+                    "created_by": current_user.id,
+                    "created_at": datetime.now(timezone.utc),
+                    "status": "draft"
+                })
+                await db.project_charters.insert_one(charter_doc)
+                result["applied"].append("Project Charter created")
+        
+        elif template_type == "business_case":
+            # Create or update business case
+            existing_case = await db.business_cases.find_one({"project_id": project_id})
+            
+            case_doc = {
+                "project_id": project_id,
+                "problem_statement": template_data.get("problem_statement", ""),
+                "business_need": template_data.get("business_need", ""),
+                "proposed_solution": template_data.get("proposed_solution", ""),
+                "expected_benefits": template_data.get("expected_benefits", []),
+                "cost_benefit_analysis": template_data.get("cost_benefit_analysis", {}),
+                "risk_assessment": template_data.get("risk_assessment", []),
+                "alternatives_considered": template_data.get("alternatives_considered", []),
+                "recommendation": template_data.get("recommendation", ""),
+                "return_on_investment": template_data.get("return_on_investment", ""),
+                "updated_at": datetime.now(timezone.utc)
+            }
+            
+            if existing_case:
+                await db.business_cases.update_one(
+                    {"project_id": project_id},
+                    {"$set": case_doc}
+                )
+                result["applied"].append("Business Case updated")
+            else:
+                case_doc.update({
+                    "id": str(uuid.uuid4()),
+                    "created_by": current_user.id,
+                    "created_at": datetime.now(timezone.utc),
+                    "status": "draft"
+                })
+                await db.business_cases.insert_one(case_doc)
+                result["applied"].append("Business Case created")
+        
+        elif template_type == "stakeholder_register":
+            # Create stakeholders from template
+            sample_stakeholders = template_data.get("sample_stakeholders", [])
+            created_count = 0
+            
+            for stakeholder_template in sample_stakeholders:
+                stakeholder_doc = {
+                    "id": str(uuid.uuid4()),
+                    "project_id": project_id,
+                    "name": stakeholder_template.get("name", ""),
+                    "title": stakeholder_template.get("title", ""),
+                    "organization": stakeholder_template.get("organization", ""),
+                    "contact_email": stakeholder_template.get("contact_email", "example@company.com"),
+                    "contact_phone": stakeholder_template.get("contact_phone", ""),
+                    "role_in_project": stakeholder_template.get("role_in_project", ""),
+                    "influence_level": stakeholder_template.get("influence_level", "medium"),
+                    "interest_level": stakeholder_template.get("interest_level", "medium"),
+                    "communication_preference": stakeholder_template.get("communication_preference", "email"),
+                    "expectations": stakeholder_template.get("expectations", []),
+                    "concerns": stakeholder_template.get("concerns", []),
+                    "created_by": current_user.id,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                }
+                
+                await db.stakeholders.insert_one(stakeholder_doc)
+                created_count += 1
+            
+            result["applied"].append(f"Created {created_count} stakeholders from template")
+        
+        elif template_type in ["risk_log", "feasibility_study"]:
+            # For risk log and feasibility study, we'll create a generic document
+            # This could be expanded to create specific collections later
+            result["applied"].append(f"Template data prepared for {template_type.replace('_', ' ').title()}")
+        
+        # Increment template usage count
+        await db.templates.update_one(
+            {"id": template_id},
+            {"$inc": {"usage_count": 1}}
+        )
+        
+        return {
+            "message": "Template applied successfully",
+            "template_name": template["name"],
+            "template_type": template_type,
+            "project_name": project["name"],
+            "results": result
+        }
+        
+    except Exception as e:
+        return {
+            "message": "Error applying template",
+            "error": str(e),
+            "template_name": template["name"],
+            "template_type": template_type,
+            "results": result
+        }
+
 # Module 2: Planning API Endpoints
 
 # Work Breakdown Structure (WBS) Routes
