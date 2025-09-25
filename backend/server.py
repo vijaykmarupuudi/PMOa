@@ -685,6 +685,281 @@ async def init_default_templates():
                 "recommendation": "Proceed with recommended technology investment for competitive advantage",
                 "return_on_investment": "Expected 18-24 month payback period with 150% ROI over 3 years"
             }
+        },
+        # Stakeholder Register Templates
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Standard Stakeholder Register",
+            "description": "Comprehensive stakeholder management template for project stakeholder identification and engagement planning",
+            "template_type": "stakeholder_register",
+            "industry": "General",
+            "project_type": "standard",
+            "is_default": True,
+            "created_by": "system",
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+            "usage_count": 0,
+            "template_data": {
+                "stakeholder_categories": [
+                    "Internal Stakeholders",
+                    "External Stakeholders",
+                    "Primary Stakeholders",
+                    "Secondary Stakeholders"
+                ],
+                "sample_stakeholders": [
+                    {
+                        "name": "Project Sponsor",
+                        "title": "Executive Sponsor",
+                        "organization": "Internal - Executive Team",
+                        "contact_email": "sponsor@company.com",
+                        "contact_phone": "+1-555-0100",
+                        "role_in_project": "Project authorization and high-level decision making",
+                        "influence_level": "high",
+                        "interest_level": "high",
+                        "communication_preference": "email",
+                        "expectations": [
+                            "Project delivered on time and within budget",
+                            "Regular status updates and escalation of major issues",
+                            "Achievement of business objectives and ROI"
+                        ],
+                        "concerns": [
+                            "Budget overruns",
+                            "Timeline delays",
+                            "Resource conflicts with other initiatives"
+                        ]
+                    },
+                    {
+                        "name": "End Users Representative",
+                        "title": "Department Manager",
+                        "organization": "Internal - Operations",
+                        "contact_email": "users@company.com",
+                        "contact_phone": "+1-555-0200",
+                        "role_in_project": "User requirements definition and acceptance testing",
+                        "influence_level": "medium",
+                        "interest_level": "high",
+                        "communication_preference": "meetings",
+                        "expectations": [
+                            "Solution meets operational needs",
+                            "Adequate training and support",
+                            "Minimal disruption to daily operations"
+                        ],
+                        "concerns": [
+                            "Learning curve for new processes",
+                            "System reliability and performance",
+                            "Impact on current workflows"
+                        ]
+                    }
+                ],
+                "engagement_strategies": [
+                    "Regular stakeholder meetings and updates",
+                    "Involvement in key decision points",
+                    "Feedback collection and incorporation",
+                    "Training and change management support",
+                    "Clear communication channels and escalation paths"
+                ],
+                "communication_matrix": {
+                    "high_influence_high_interest": "Manage closely - weekly updates, direct involvement",
+                    "high_influence_low_interest": "Keep satisfied - monthly updates, informed of major changes",
+                    "low_influence_high_interest": "Keep informed - regular communication, project newsletter",
+                    "low_influence_low_interest": "Monitor - quarterly updates, general communications"
+                }
+            }
+        },
+        # Risk Log Templates
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Comprehensive Risk Log",
+            "description": "Complete risk management template with risk identification, assessment, and mitigation planning",
+            "template_type": "risk_log",
+            "industry": "General",
+            "project_type": "standard",
+            "is_default": True,
+            "created_by": "system",
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+            "usage_count": 0,
+            "template_data": {
+                "risk_categories": [
+                    "Technical Risk",
+                    "Schedule Risk",
+                    "Budget Risk",
+                    "Resource Risk",
+                    "External Risk",
+                    "Organizational Risk",
+                    "Quality Risk",
+                    "Regulatory/Compliance Risk"
+                ],
+                "probability_scale": {
+                    "very_low": "1 - Very Low (0-10% chance)",
+                    "low": "2 - Low (11-30% chance)",
+                    "medium": "3 - Medium (31-50% chance)",
+                    "high": "4 - High (51-80% chance)",
+                    "very_high": "5 - Very High (81-100% chance)"
+                },
+                "impact_scale": {
+                    "very_low": "1 - Very Low (Minimal impact)",
+                    "low": "2 - Low (Minor impact, easily manageable)",
+                    "medium": "3 - Medium (Moderate impact, requires management attention)",
+                    "high": "4 - High (Major impact, significant management required)",
+                    "very_high": "5 - Very High (Severe impact, may jeopardize project success)"
+                },
+                "sample_risks": [
+                    {
+                        "title": "Key Team Member Unavailability",
+                        "description": "Critical team members may become unavailable due to competing priorities or departure",
+                        "category": "Resource Risk",
+                        "probability": "medium",
+                        "impact": "high",
+                        "risk_score": 12,
+                        "mitigation_strategy": "Cross-training team members, maintaining detailed documentation, identifying backup resources",
+                        "contingency_plan": "Engage external consultants or reassign project tasks to available team members",
+                        "owner": "Project Manager",
+                        "status": "identified"
+                    },
+                    {
+                        "title": "Technology Integration Issues",
+                        "description": "Difficulties in integrating new technology with existing systems",
+                        "category": "Technical Risk",
+                        "probability": "medium",
+                        "impact": "high",
+                        "risk_score": 12,
+                        "mitigation_strategy": "Conduct thorough technical assessment, prototype integration approach, engage vendor support",
+                        "contingency_plan": "Implement phased integration approach or consider alternative technology solutions",
+                        "owner": "Technical Lead",
+                        "status": "identified"
+                    }
+                ],
+                "risk_management_process": [
+                    "Risk Identification: Systematic identification of potential risks",
+                    "Risk Analysis: Assess probability and impact of each risk",
+                    "Risk Prioritization: Rank risks by risk score (probability × impact)",
+                    "Risk Response Planning: Develop mitigation and contingency strategies",
+                    "Risk Monitoring: Regular review and update of risk status",
+                    "Risk Communication: Report risks to stakeholders and management"
+                ]
+            }
+        },
+        # Feasibility Study Templates
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Project Feasibility Study",
+            "description": "Comprehensive feasibility analysis template covering technical, economic, operational, and schedule feasibility",
+            "template_type": "feasibility_study",
+            "industry": "General",
+            "project_type": "standard",
+            "is_default": True,
+            "created_by": "system",
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+            "usage_count": 0,
+            "template_data": {
+                "executive_summary": "Provide a high-level overview of the feasibility study findings and recommendations",
+                "project_overview": {
+                    "project_description": "Detailed description of the proposed project",
+                    "objectives": [
+                        "Primary objective 1",
+                        "Primary objective 2",
+                        "Primary objective 3"
+                    ],
+                    "scope": "Define what is included and excluded from the project scope",
+                    "success_criteria": [
+                        "Measurable success criteria 1",
+                        "Measurable success criteria 2",
+                        "Measurable success criteria 3"
+                    ]
+                },
+                "technical_feasibility": {
+                    "technology_requirements": "Required technologies, systems, and infrastructure",
+                    "technical_risks": [
+                        "Risk 1: Description and mitigation approach",
+                        "Risk 2: Description and mitigation approach"
+                    ],
+                    "resource_requirements": {
+                        "hardware": "Required hardware specifications",
+                        "software": "Required software and licensing",
+                        "personnel": "Technical expertise and skill requirements",
+                        "infrastructure": "Network, security, and facility requirements"
+                    },
+                    "technical_assessment": "Overall technical feasibility rating and justification"
+                },
+                "economic_feasibility": {
+                    "cost_analysis": {
+                        "initial_investment": "One-time project costs",
+                        "ongoing_costs": "Annual operational and maintenance costs",
+                        "total_cost_of_ownership": "3-5 year total cost projection"
+                    },
+                    "benefit_analysis": {
+                        "quantified_benefits": "Measurable financial benefits",
+                        "intangible_benefits": "Non-financial benefits and value",
+                        "cost_savings": "Expected cost reductions and efficiencies"
+                    },
+                    "financial_metrics": {
+                        "roi": "Return on Investment calculation",
+                        "payback_period": "Expected payback timeline",
+                        "npv": "Net Present Value analysis",
+                        "break_even_point": "Break-even analysis"
+                    },
+                    "economic_assessment": "Overall economic feasibility rating and justification"
+                },
+                "operational_feasibility": {
+                    "organizational_readiness": "Assessment of organizational capability to implement and operate the solution",
+                    "process_impact": "Impact on existing business processes and workflows",
+                    "user_acceptance": "Expected user adoption and change management requirements",
+                    "operational_requirements": {
+                        "staffing": "Required operational staff and roles",
+                        "training": "Training requirements and programs",
+                        "support": "Ongoing support and maintenance needs",
+                        "procedures": "New procedures and documentation needed"
+                    },
+                    "operational_risks": [
+                        "Risk 1: User adoption challenges",
+                        "Risk 2: Process disruption during implementation",
+                        "Risk 3: Ongoing operational complexity"
+                    ],
+                    "operational_assessment": "Overall operational feasibility rating and justification"
+                },
+                "schedule_feasibility": {
+                    "project_timeline": "High-level project schedule and major milestones",
+                    "critical_path": "Key dependencies and critical path activities",
+                    "resource_availability": "Assessment of resource availability and scheduling",
+                    "external_dependencies": "External factors that could impact timeline",
+                    "schedule_risks": [
+                        "Risk 1: Resource conflicts with other initiatives",
+                        "Risk 2: External vendor dependencies",
+                        "Risk 3: Regulatory approval timelines"
+                    ],
+                    "schedule_assessment": "Overall schedule feasibility rating and justification"
+                },
+                "alternative_analysis": [
+                    {
+                        "alternative": "Do Nothing",
+                        "description": "Maintain current state",
+                        "pros": ["No investment required", "No disruption"],
+                        "cons": ["Continued inefficiencies", "Competitive disadvantage"]
+                    },
+                    {
+                        "alternative": "Phased Implementation",
+                        "description": "Implement in multiple phases",
+                        "pros": ["Lower initial investment", "Reduced risk"],
+                        "cons": ["Longer timeline", "Potential integration issues"]
+                    }
+                ],
+                "recommendations": {
+                    "feasibility_rating": "Overall feasibility assessment (High/Medium/Low)",
+                    "recommendation": "Recommended course of action",
+                    "justification": "Rationale for the recommendation",
+                    "next_steps": [
+                        "Immediate next step 1",
+                        "Immediate next step 2",
+                        "Immediate next step 3"
+                    ],
+                    "success_factors": [
+                        "Critical success factor 1",
+                        "Critical success factor 2",
+                        "Critical success factor 3"
+                    ]
+                }
+            }
         }
     ]
     
