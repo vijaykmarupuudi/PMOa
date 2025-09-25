@@ -149,6 +149,9 @@ class ProjectSetupWizardBase(BaseModel):
 class TemplateType(str, Enum):
     PROJECT_CHARTER = "project_charter"
     BUSINESS_CASE = "business_case"
+    STAKEHOLDER_REGISTER = "stakeholder_register"
+    RISK_LOG = "risk_log"
+    FEASIBILITY_STUDY = "feasibility_study"
 
 class TemplateBase(BaseModel):
     name: str
