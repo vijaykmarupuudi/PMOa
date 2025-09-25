@@ -78,7 +78,7 @@ const Planning = () => {
 
   const fetchProject = async () => {
     try {
-      const response = await fetch(`/api/projects/${projectId}`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/projects/${projectId}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
