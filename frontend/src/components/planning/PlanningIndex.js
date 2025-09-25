@@ -24,7 +24,8 @@ const PlanningIndex = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/projects`, {
+      // Fetch projects relevant to planning module (initiation completed or already in planning)
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/projects/by-module/planning`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -34,11 +35,11 @@ const PlanningIndex = () => {
         const projectData = await response.json();
         setProjects(projectData);
       } else {
-        toast.error('Failed to fetch projects');
+        toast.error('Failed to fetch planning projects');
       }
     } catch (error) {
-      console.error('Error fetching projects:', error);
-      toast.error('Error loading projects');
+      console.error('Error fetching planning projects:', error);
+      toast.error('Error loading planning projects');
     } finally {
       setLoading(false);
     }
