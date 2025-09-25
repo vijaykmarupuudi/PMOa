@@ -308,6 +308,8 @@ const Initiation = () => {
           <Route path="project/:id/charter" element={<ProjectCharter />} />
           <Route path="project/:id/business-case" element={<BusinessCase />} />
           <Route path="project/:id/stakeholders" element={<StakeholderRegister />} />
+          <Route path="project/:id/risks" element={<RiskLog />} />
+          <Route path="project/:id/feasibility" element={<FeasibilityStudy />} />
         </Routes>
       </div>
     );
