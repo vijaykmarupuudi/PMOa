@@ -13,6 +13,7 @@ const ProjectCharter = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   
   const [formData, setFormData] = useState({
     project_id: projectId,
