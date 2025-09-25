@@ -1236,6 +1236,228 @@ async def use_template(template_id: str, current_user: User = Depends(get_curren
     
     return {"message": "Template usage recorded", "template_id": template_id}
 
+# Module 2: Planning API Endpoints
+
+# Work Breakdown Structure (WBS) Routes
+@app.get("/api/projects/{project_id}/wbs", response_model=List[WBSTask])
+async def get_project_wbs(
+    project_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Get all WBS tasks for a project"""
+    # Verify project access
+    project = await db.projects.find_one({"id": project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Get WBS tasks ordered by WBS code
+    wbs_tasks = await db.wbs_tasks.find({"project_id": project_id}).sort("wbs_code", 1).to_list(None)
+    
+    # Convert ObjectId to string
+    for task in wbs_tasks:
+        task["_id"] = str(task["_id"])
+    
+    return [WBSTask(**task) for task in wbs_tasks]
+
+@app.post("/api/projects/{project_id}/wbs", response_model=WBSTask)
+async def create_wbs_task(
+    project_id: str,
+    task_data: WBSTaskBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new WBS task"""
+    # Verify project access
+    project = await db.projects.find_one({"id": project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Ensure project_id matches
+    task_data.project_id = project_id
+    
+    # Generate unique ID
+    task_id = str(uuid.uuid4())
+    
+    # Create task document
+    task_doc = {
+        "id": task_id,
+        **task_data.dict(),
+        "created_by": current_user.id,
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc),
+        "completion_percentage": 0.0
+    }
+    
+    # Insert into database
+    await db.wbs_tasks.insert_one(task_doc)
+    
+    # Return created task
+    task_doc["_id"] = str(task_doc.get("_id"))
+    return WBSTask(**task_doc)
+
+@app.put("/api/wbs/{task_id}", response_model=WBSTask)
+async def update_wbs_task(
+    task_id: str,
+    task_data: WBSTaskBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Update a WBS task"""
+    # Check if task exists
+    existing_task = await db.wbs_tasks.find_one({"id": task_id})
+    if not existing_task:
+        raise HTTPException(status_code=404, detail="WBS task not found")
+    
+    # Update task
+    update_data = {
+        **task_data.dict(),
+        "updated_at": datetime.now(timezone.utc)
+    }
+    
+    await db.wbs_tasks.update_one(
+        {"id": task_id},
+        {"$set": update_data}
+    )
+    
+    # Return updated task
+    updated_task = await db.wbs_tasks.find_one({"id": task_id})
+    updated_task["_id"] = str(updated_task["_id"])
+    return WBSTask(**updated_task)
+
+@app.delete("/api/wbs/{task_id}")
+async def delete_wbs_task(
+    task_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Delete a WBS task"""
+    # Check if task exists
+    existing_task = await db.wbs_tasks.find_one({"id": task_id})
+    if not existing_task:
+        raise HTTPException(status_code=404, detail="WBS task not found")
+    
+    # Delete task
+    await db.wbs_tasks.delete_one({"id": task_id})
+    
+    return {"message": "WBS task deleted successfully"}
+
+# Risk Management Routes
+@app.get("/api/projects/{project_id}/risks", response_model=List[Risk])
+async def get_project_risks(
+    project_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Get all risks for a project"""
+    # Verify project access
+    project = await db.projects.find_one({"id": project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Get risks
+    risks = await db.risks.find({"project_id": project_id}).to_list(None)
+    
+    # Convert ObjectId to string and calculate risk score
+    for risk in risks:
+        risk["_id"] = str(risk["_id"])
+        # Calculate risk score (simple 1-5 scale)
+        prob_score = {"very_low": 1, "low": 2, "medium": 3, "high": 4, "very_high": 5}
+        impact_score = {"very_low": 1, "low": 2, "medium": 3, "high": 4, "very_high": 5}
+        risk["risk_score"] = prob_score.get(risk["probability"], 3) * impact_score.get(risk["impact"], 3)
+    
+    return [Risk(**risk) for risk in risks]
+
+@app.post("/api/projects/{project_id}/risks", response_model=Risk)
+async def create_risk(
+    project_id: str,
+    risk_data: RiskBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new risk"""
+    # Verify project access
+    project = await db.projects.find_one({"id": project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Ensure project_id matches
+    risk_data.project_id = project_id
+    
+    # Generate unique ID
+    risk_id = str(uuid.uuid4())
+    
+    # Calculate risk score
+    prob_score = {"very_low": 1, "low": 2, "medium": 3, "high": 4, "very_high": 5}
+    impact_score = {"very_low": 1, "low": 2, "medium": 3, "high": 4, "very_high": 5}
+    risk_score = prob_score.get(risk_data.probability, 3) * impact_score.get(risk_data.impact, 3)
+    
+    # Create risk document
+    risk_doc = {
+        "id": risk_id,
+        **risk_data.dict(),
+        "risk_score": risk_score,
+        "created_by": current_user.id,
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc)
+    }
+    
+    # Insert into database
+    await db.risks.insert_one(risk_doc)
+    
+    # Return created risk
+    risk_doc["_id"] = str(risk_doc.get("_id"))
+    return Risk(**risk_doc)
+
+# Budget Planning Routes
+@app.get("/api/projects/{project_id}/budget", response_model=List[BudgetItem])
+async def get_project_budget(
+    project_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Get all budget items for a project"""
+    # Verify project access
+    project = await db.projects.find_one({"id": project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Get budget items
+    budget_items = await db.budget_items.find({"project_id": project_id}).to_list(None)
+    
+    # Convert ObjectId to string
+    for item in budget_items:
+        item["_id"] = str(item["_id"])
+    
+    return [BudgetItem(**item) for item in budget_items]
+
+@app.post("/api/projects/{project_id}/budget", response_model=BudgetItem)
+async def create_budget_item(
+    project_id: str,
+    budget_data: BudgetItemBase,
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new budget item"""
+    # Verify project access
+    project = await db.projects.find_one({"id": project_id})
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Ensure project_id matches
+    budget_data.project_id = project_id
+    
+    # Generate unique ID
+    budget_id = str(uuid.uuid4())
+    
+    # Create budget document
+    budget_doc = {
+        "id": budget_id,
+        **budget_data.dict(),
+        "created_by": current_user.id,
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc)
+    }
+    
+    # Insert into database
+    await db.budget_items.insert_one(budget_doc)
+    
+    # Return created budget item
+    budget_doc["_id"] = str(budget_doc.get("_id"))
+    return BudgetItem(**budget_doc)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
