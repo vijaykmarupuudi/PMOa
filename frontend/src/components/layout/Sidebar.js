@@ -55,7 +55,7 @@ const navigation = [
       </svg>
     ),
     roles: ['project_manager', 'executive', 'team_member'],
-    coming_soon: true,
+    coming_soon: false,
   },
   {
     name: 'Execution',
