@@ -420,6 +420,15 @@ const ProjectCharter = () => {
           )}
         </form>
       </div>
+      
+      {/* Template Selector Modal */}
+      <TemplateSelector
+        isOpen={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+        templateType="project_charter"
+        projectId={projectId}
+        onTemplateApplied={handleTemplateApplied}
+      />
     </div>
   );
 };
