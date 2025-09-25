@@ -26,7 +26,8 @@ const Initiation = () => {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${BACKEND_URL}/api/projects`, {
+      // Fetch projects relevant to initiation module
+      const response = await fetch(`${BACKEND_URL}/api/projects/by-module/initiation`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -34,12 +35,10 @@ const Initiation = () => {
 
       if (response.ok) {
         const data = await response.json();
-        // Filter projects in initiation phase
-        const initiationProjects = data.filter(p => p.status === 'initiation');
-        setProjects(initiationProjects);
+        setProjects(data);
       }
     } catch (error) {
-      console.error('Error fetching projects:', error);
+      console.error('Error fetching initiation projects:', error);
     }
     setLoading(false);
   };
