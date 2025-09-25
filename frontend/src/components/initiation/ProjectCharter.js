@@ -210,15 +210,26 @@ const ProjectCharter = () => {
               {charter ? 'View and manage' : 'Create'} the project charter
             </p>
           </div>
-          {charter && !editing && (
-            <button
-              onClick={() => setEditing(true)}
-              className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
-              data-testid="edit-charter-btn"
-            >
-              Edit Charter
-            </button>
-          )}
+          <div className="flex space-x-3">
+            {!charter && (
+              <button
+                onClick={() => setShowTemplateSelector(true)}
+                className="px-4 py-2 text-sm font-medium text-purple-600 bg-purple-50 rounded-md hover:bg-purple-100"
+                data-testid="use-template-btn"
+              >
+                📋 Use Template
+              </button>
+            )}
+            {charter && !editing && (
+              <button
+                onClick={() => setEditing(true)}
+                className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
+                data-testid="edit-charter-btn"
+              >
+                Edit Charter
+              </button>
+            )}
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="px-6 py-6 space-y-6">
