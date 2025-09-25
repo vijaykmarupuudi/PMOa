@@ -349,6 +349,71 @@ class CommunicationPlan(CommunicationPlanBase):
     created_at: datetime
     updated_at: datetime
 
+# Quality & Procurement Models
+class QualityStandard(str, Enum):
+    ISO_9001 = "iso_9001"
+    SIX_SIGMA = "six_sigma"
+    CMMI = "cmmi"
+    AGILE_TESTING = "agile_testing"
+    CUSTOM = "custom"
+
+class ProcurementType(str, Enum):
+    SOFTWARE = "software"
+    HARDWARE = "hardware"
+    SERVICES = "services"
+    CONSULTING = "consulting"
+    TRAINING = "training"
+    OTHER = "other"
+
+class ProcurementStatus(str, Enum):
+    PLANNED = "planned"
+    RFQ_SENT = "rfq_sent"
+    EVALUATION = "evaluation"
+    APPROVED = "approved"
+    ORDERED = "ordered"
+    RECEIVED = "received"
+    COMPLETED = "completed"
+
+class QualityRequirementBase(BaseModel):
+    project_id: str
+    requirement_name: str
+    description: str
+    standard: QualityStandard
+    acceptance_criteria: List[str] = []
+    testing_approach: str
+    responsible_party: str
+    target_date: Optional[datetime] = None
+    status: str = "planned"  # planned, in_progress, completed, failed
+    priority: str = "medium"  # low, medium, high, critical
+
+class QualityRequirement(QualityRequirementBase):
+    id: str
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+
+class ProcurementItemBase(BaseModel):
+    project_id: str
+    item_name: str
+    description: str
+    procurement_type: ProcurementType
+    vendor: Optional[str] = None
+    estimated_cost: float
+    actual_cost: Optional[float] = 0.0
+    quantity: int = 1
+    unit: Optional[str] = "each"
+    required_date: Optional[datetime] = None
+    status: ProcurementStatus = ProcurementStatus.PLANNED
+    approval_required: bool = True
+    approved_by: Optional[str] = None
+    notes: Optional[str] = ""
+
+class ProcurementItem(ProcurementItemBase):
+    id: str
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+
 # Helper functions
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
