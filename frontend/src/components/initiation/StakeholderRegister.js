@@ -568,6 +568,15 @@ const StakeholderRegister = () => {
           )}
         </div>
       </div>
+      
+      {/* Template Selector Modal */}
+      <TemplateSelector
+        isOpen={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+        templateType="stakeholder_register"
+        projectId={projectId}
+        onTemplateApplied={handleTemplateApplied}
+      />
     </div>
   );
 };
