@@ -1113,6 +1113,242 @@ async def init_sample_projects():
             await db.projects.insert_one(project)
             print(f"Sample project created: {project['name']}")
 
+async def init_sample_timeline_data():
+    """Initialize sample timeline tasks and milestones for demonstration"""
+    
+    # Get sample projects
+    sample_projects = await db.projects.find({}).to_list(5)
+    if not sample_projects:
+        print("No projects found, skipping timeline data initialization")
+        return
+    
+    for project in sample_projects[:2]:  # Add timeline data to first 2 projects
+        project_id = project["id"]
+        
+        # Sample Timeline Tasks
+        sample_tasks = [
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "name": "Project Kickoff & Requirements Gathering",
+                "description": "Initiate project, gather requirements, and establish team communication",
+                "start_date": datetime(2025, 1, 15, 0, 0, 0, tzinfo=timezone.utc),
+                "end_date": datetime(2025, 1, 25, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "completed",
+                "assigned_to": "Project Manager",
+                "priority": "high",
+                "progress": 100,
+                "estimated_hours": 40.0,
+                "dependencies": [],
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "name": "System Architecture & Design",
+                "description": "Design system architecture, create technical specifications, and review with stakeholders",
+                "start_date": datetime(2025, 1, 26, 0, 0, 0, tzinfo=timezone.utc),
+                "end_date": datetime(2025, 2, 15, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "in_progress",
+                "assigned_to": "Technical Architect",
+                "priority": "high",
+                "progress": 75,
+                "estimated_hours": 80.0,
+                "dependencies": [],
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "name": "Frontend Development",
+                "description": "Develop user interface components, implement responsive design, and integrate with backend APIs",
+                "start_date": datetime(2025, 2, 16, 0, 0, 0, tzinfo=timezone.utc),
+                "end_date": datetime(2025, 4, 15, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "not_started",
+                "assigned_to": "Frontend Team",
+                "priority": "medium",
+                "progress": 0,
+                "estimated_hours": 240.0,
+                "dependencies": [],
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "name": "Backend API Development",
+                "description": "Implement REST APIs, database integration, authentication, and business logic",
+                "start_date": datetime(2025, 2, 1, 0, 0, 0, tzinfo=timezone.utc),
+                "end_date": datetime(2025, 4, 30, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "in_progress",
+                "assigned_to": "Backend Team",
+                "priority": "high",
+                "progress": 45,
+                "estimated_hours": 320.0,
+                "dependencies": [],
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "name": "Database Setup & Migration",
+                "description": "Set up production database, create migration scripts, and establish backup procedures",
+                "start_date": datetime(2025, 2, 1, 0, 0, 0, tzinfo=timezone.utc),
+                "end_date": datetime(2025, 2, 28, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "completed",
+                "assigned_to": "DevOps Engineer",
+                "priority": "critical",
+                "progress": 100,
+                "estimated_hours": 60.0,
+                "dependencies": [],
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "name": "Quality Assurance & Testing",
+                "description": "Comprehensive testing including unit tests, integration tests, and user acceptance testing",
+                "start_date": datetime(2025, 4, 16, 0, 0, 0, tzinfo=timezone.utc),
+                "end_date": datetime(2025, 5, 30, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "not_started",
+                "assigned_to": "QA Team",
+                "priority": "high",
+                "progress": 0,
+                "estimated_hours": 160.0,
+                "dependencies": [],
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "name": "Security Review & Penetration Testing",
+                "description": "Security assessment, vulnerability testing, and implementation of security measures",
+                "start_date": datetime(2025, 5, 1, 0, 0, 0, tzinfo=timezone.utc),
+                "end_date": datetime(2025, 5, 15, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "not_started",
+                "assigned_to": "Security Team",
+                "priority": "high",
+                "progress": 0,
+                "estimated_hours": 80.0,
+                "dependencies": [],
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "name": "Deployment & Production Setup",
+                "description": "Deploy to production environment, configure monitoring, and establish support procedures",
+                "start_date": datetime(2025, 6, 1, 0, 0, 0, tzinfo=timezone.utc),
+                "end_date": datetime(2025, 6, 15, 0, 0, 0, tzinfo=timezone.utc),
+                "status": "not_started",
+                "assigned_to": "DevOps Team",
+                "priority": "critical",
+                "progress": 0,
+                "estimated_hours": 40.0,
+                "dependencies": [],
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            }
+        ]
+        
+        # Sample Milestones
+        sample_milestones = [
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "name": "Project Charter Approved",
+                "description": "Project charter reviewed and approved by stakeholders",
+                "due_date": datetime(2025, 1, 25, 0, 0, 0, tzinfo=timezone.utc),
+                "type": "checkpoint",
+                "status": "completed",
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "name": "Technical Design Complete",
+                "description": "System architecture and technical specifications finalized",
+                "due_date": datetime(2025, 2, 15, 0, 0, 0, tzinfo=timezone.utc),
+                "type": "deliverable",
+                "status": "in_progress",
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "name": "Alpha Release",
+                "description": "Initial working version ready for internal testing",
+                "due_date": datetime(2025, 4, 30, 0, 0, 0, tzinfo=timezone.utc),
+                "type": "deliverable",
+                "status": "pending",
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "name": "Security Clearance",
+                "description": "Security review completed and clearance obtained",
+                "due_date": datetime(2025, 5, 15, 0, 0, 0, tzinfo=timezone.utc),
+                "type": "checkpoint",
+                "status": "pending",
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "project_id": project_id,
+                "name": "Production Launch",
+                "description": "System deployed to production and available to end users",
+                "due_date": datetime(2025, 6, 15, 0, 0, 0, tzinfo=timezone.utc),
+                "type": "deadline",
+                "status": "pending",
+                "created_by": project["created_by"],
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
+            }
+        ]
+        
+        # Insert timeline tasks
+        for task in sample_tasks:
+            existing_task = await db.timeline_tasks.find_one({
+                "project_id": project_id, 
+                "name": task["name"]
+            })
+            if not existing_task:
+                await db.timeline_tasks.insert_one(task)
+                print(f"Sample timeline task created: {task['name']} for project {project['name']}")
+        
+        # Insert milestones
+        for milestone in sample_milestones:
+            existing_milestone = await db.milestones.find_one({
+                "project_id": project_id, 
+                "name": milestone["name"]
+            })
+            if not existing_milestone:
+                await db.milestones.insert_one(milestone)
+                print(f"Sample milestone created: {milestone['name']} for project {project['name']}")
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize the application"""
