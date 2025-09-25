@@ -100,8 +100,8 @@ const PlanningIndex = () => {
       name: 'Timeline & Gantt',
       description: 'Visual project timeline and dependencies',
       icon: CalendarDaysIcon,
-      status: 'coming_soon',
-      color: 'text-gray-400'
+      status: 'available',
+      color: 'text-green-600'
     },
     {
       name: 'Communication Plan',
