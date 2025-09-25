@@ -1,9 +1,7 @@
-from fastapi import FastAPI, HTTPException, Depends, status, UploadFile, File
+from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 import motor.motor_asyncio
-from pymongo.errors import DuplicateKeyError
 from pydantic import BaseModel, EmailStr
 from passlib.context import CryptContext
 from jose import JWTError, jwt
@@ -11,8 +9,6 @@ from datetime import datetime, timedelta, timezone
 import os
 from typing import Optional, List, Dict, Any
 import uuid
-from bson import ObjectId
-import json
 from enum import Enum
 
 # Environment variables
