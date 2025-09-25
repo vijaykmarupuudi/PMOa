@@ -1912,6 +1912,57 @@ async def delete_wbs_task(
     
     return {"message": "WBS task deleted successfully"}
 
+# Timeline & Gantt Chart Models
+class TimelineTaskStatus(str, Enum):
+    NOT_STARTED = "not_started"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    ON_HOLD = "on_hold"
+    CANCELLED = "cancelled"
+
+class TimelineTaskBase(BaseModel):
+    project_id: str
+    name: str
+    description: Optional[str] = ""
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+    assigned_to: Optional[str] = None
+    status: TimelineTaskStatus = TimelineTaskStatus.NOT_STARTED
+    progress: int = 0  # 0-100
+    dependencies: List[str] = []  # List of task IDs
+    priority: Priority = Priority.MEDIUM
+    estimated_hours: float = 0.0
+
+class TimelineTask(TimelineTaskBase):
+    id: str
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+
+class MilestoneType(str, Enum):
+    DELIVERABLE = "deliverable"
+    CHECKPOINT = "checkpoint"
+    DEADLINE = "deadline"
+
+class MilestoneStatus(str, Enum):
+    PENDING = "pending"
+    COMPLETED = "completed"
+    OVERDUE = "overdue"
+
+class MilestoneBase(BaseModel):
+    project_id: str
+    name: str
+    description: Optional[str] = ""
+    due_date: datetime
+    type: MilestoneType = MilestoneType.DELIVERABLE
+    status: MilestoneStatus = MilestoneStatus.PENDING
+
+class Milestone(MilestoneBase):
+    id: str
+    created_by: str
+    created_at: datetime
+    updated_at: datetime
+
 # Risk Management Routes
 @app.get("/api/projects/{project_id}/risks", response_model=List[Risk])
 async def get_project_risks(
