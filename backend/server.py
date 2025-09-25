@@ -1062,16 +1062,17 @@ async def init_sample_projects():
             "budget_range": "$200K - $300K",
             "methodology": "agile"
         },
+        # EXECUTION PHASE PROJECT
         {
             "id": str(uuid.uuid4()),
             "name": "ERP System Integration",
-            "description": "Integrate new ERP system with existing CRM and financial systems to streamline operations",
+            "description": "Integrate new ERP system with existing CRM and financial systems to streamline operations. Includes data migration, user training, and process optimization.",
             "status": ProjectStatus.EXECUTION,
             "priority": Priority.CRITICAL,
             "start_date": datetime(2024, 11, 1, 0, 0, 0, tzinfo=timezone.utc),
             "end_date": datetime(2025, 5, 30, 0, 0, 0, tzinfo=timezone.utc),
             "budget": 450000.0,
-            "stakeholders": [],
+            "stakeholders": ["IT Director", "Finance Team", "Operations Manager", "External Vendor"],
             "tags": ["erp", "integration", "systems", "automation"],
             "project_manager_id": "",  # Will be set to PM demo user
             "created_by": "",  # Will be set to PM demo user
