@@ -1286,7 +1286,7 @@ async def init_sample_timeline_data():
                 "description": "System architecture and technical specifications finalized",
                 "due_date": datetime(2025, 2, 15, 0, 0, 0, tzinfo=timezone.utc),
                 "type": "deliverable",
-                "status": "in_progress",
+                "status": "pending",
                 "created_by": project["created_by"],
                 "created_at": datetime.now(timezone.utc),
                 "updated_at": datetime.now(timezone.utc)
