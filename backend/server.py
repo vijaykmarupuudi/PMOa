@@ -1151,7 +1151,7 @@ async def init_sample_timeline_data():
                 "description": "Design system architecture, create technical specifications, and review with stakeholders",
                 "start_date": datetime(2025, 1, 26, 0, 0, 0, tzinfo=timezone.utc),
                 "end_date": datetime(2025, 2, 15, 0, 0, 0, tzinfo=timezone.utc),
-                "status": "in_progress",
+                "status": "pending",
                 "assigned_to": "Technical Architect",
                 "priority": "high",
                 "progress": 75,
