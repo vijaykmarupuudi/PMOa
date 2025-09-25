@@ -58,35 +58,37 @@ const Initiation = () => {
   // Main initiation dashboard
   if (location.pathname === '/initiation' || location.pathname === '/initiation/') {
     return (
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white shadow-sm rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-900">Project Initiation</h1>
-            <p className="mt-1 text-sm text-gray-600">
-              Manage project initiation activities and documentation
-            </p>
-          </div>
+      <div className="max-w-7xl mx-auto">
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="bg-white shadow-sm rounded-lg">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h1 className="text-2xl font-bold text-gray-900">Project Initiation</h1>
+              <p className="mt-1 text-sm text-gray-600">
+                Module 1 - Project setup, charter creation, and stakeholder management
+              </p>
+            </div>
 
-          <div className="p-6">
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              <div 
-                onClick={() => navigate('/initiation/wizard')}
-                className="bg-blue-50 border border-blue-200 rounded-lg p-6 cursor-pointer hover:bg-blue-100 transition-colors"
-                data-testid="project-wizard-card"
-              >
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                  </div>
-                  <div className="ml-4">
-                    <h3 className="text-lg font-medium text-gray-900">Project Wizard</h3>
-                    <p className="text-sm text-gray-600">Start a new project with guided setup</p>
+            <div className="p-6">
+              {/* Quick Actions */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div 
+                  onClick={() => navigate('/initiation/wizard')}
+                  className="bg-blue-50 border border-blue-200 rounded-lg p-6 cursor-pointer hover:bg-blue-100 transition-colors"
+                  data-testid="project-wizard-card"
+                >
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <svg className="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                    </div>
+                    <div className="ml-4">
+                      <h3 className="text-lg font-medium text-gray-900">Project Wizard</h3>
+                      <p className="text-sm text-gray-600">Start a new project with guided setup</p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
               <div className="bg-green-50 border border-green-200 rounded-lg p-6">
                 <div className="flex items-center">
