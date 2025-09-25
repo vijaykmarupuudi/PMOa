@@ -174,6 +174,16 @@ const Planning = () => {
         </div>
       </div>
 
+      {/* Project Status Manager */}
+      <ProjectStatusManager 
+        project={project} 
+        onStatusUpdate={(newStatus) => {
+          setProject(prev => ({ ...prev, status: newStatus }));
+          // Refresh project data
+          fetchProject();
+        }}
+      />
+
       {/* Navigation Tabs */}
       <div className="bg-white shadow rounded-lg">
         <div className="border-b border-gray-200">
