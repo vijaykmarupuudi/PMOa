@@ -245,10 +245,10 @@ const PlanningIndex = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-gray-700">Planning Module Completion</span>
-            <span className="text-sm font-medium text-blue-600">50% Complete</span>
+            <span className="text-sm font-medium text-blue-600">67% Complete</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-blue-600 h-2 rounded-full" style={{ width: '50%' }}></div>
+            <div className="bg-blue-600 h-2 rounded-full" style={{ width: '67%' }}></div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
@@ -257,12 +257,12 @@ const PlanningIndex = () => {
                 <li>• Work Breakdown Structure (WBS)</li>
                 <li>• Risk Management System</li>
                 <li>• Budget Planning & Tracking</li>
+                <li>• Timeline & Gantt Charts</li>
               </ul>
             </div>
             <div>
               <h4 className="text-sm font-medium text-gray-900 mb-2">🚧 Upcoming Features</h4>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Interactive Gantt Charts</li>
                 <li>• Communication Planning</li>
                 <li>• Quality & Procurement Templates</li>
               </ul>
