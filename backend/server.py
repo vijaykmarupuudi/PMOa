@@ -1946,35 +1946,148 @@ async def create_project(
     return Project(**project_dict)
 
 @app.get("/api/projects", response_model=List[Project])
-async def get_projects(current_user: User = Depends(get_current_user)):
-    # Get projects based on user role
-    if current_user.role == UserRole.EXECUTIVE:
-        # Executives can see all projects
-        cursor = db.projects.find({})
-    elif current_user.role == UserRole.PROJECT_MANAGER:
-        # PMs can see projects they manage or are involved in
-        cursor = db.projects.find({
-            "$or": [
-                {"project_manager_id": current_user.id},
-                {"stakeholders": current_user.id},
-                {"created_by": current_user.id}
-            ]
-        })
-    else:
-        # Team members and stakeholders see projects they're involved in
-        cursor = db.projects.find({
-            "$or": [
-                {"stakeholders": current_user.id},
-                {"created_by": current_user.id}
-            ]
-        })
-    
-    projects = []
-    async for project in cursor:
-        project["_id"] = str(project["_id"])
-        projects.append(Project(**project))
-    
-    return projects
+async def get_projects(
+    status: Optional[str] = None,
+    current_user: User = Depends(get_current_user)
+):
+    """Get projects for the authenticated user, optionally filtered by status"""
+    try:
+        # Build base query based on user role
+        if current_user.role in ["project_manager", "executive"]:
+            # Project managers and executives can see all projects
+            base_query = {}
+        else:
+            # Team members and stakeholders see projects where they are involved
+            base_query = {
+                "$or": [
+                    {"project_manager_id": current_user.id},
+                    {"stakeholders": current_user.id},
+                    {"created_by": current_user.id}
+                ]
+            }
+        
+        # Add status filter if provided
+        if status:
+            base_query["status"] = status
+        
+        projects_cursor = db.projects.find(base_query)
+        
+        projects = []
+        async for project_doc in projects_cursor:
+            project_doc["id"] = project_doc["_id"]
+            del project_doc["_id"]
+            projects.append(project_doc)
+        
+        return projects
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching projects: {str(e)}")
+
+@app.get("/api/projects/by-module/{module_name}", response_model=List[Project])
+async def get_projects_by_module(
+    module_name: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Get projects relevant to a specific PMO module"""
+    try:
+        # Define which project statuses are relevant for each module
+        module_status_mapping = {
+            "initiation": ["initiation"],
+            "planning": ["initiation", "planning"],  # Can plan projects that completed initiation
+            "execution": ["planning", "execution"],  # Can execute projects that completed planning
+            "monitoring": ["execution", "monitoring", "closure"],
+            "closure": ["closure", "completed"]
+        }
+        
+        relevant_statuses = module_status_mapping.get(module_name, [])
+        if not relevant_statuses:
+            raise HTTPException(status_code=400, detail=f"Invalid module name: {module_name}")
+        
+        # Build query based on user role
+        if current_user.role in ["project_manager", "executive"]:
+            base_query = {"status": {"$in": relevant_statuses}}
+        else:
+            base_query = {
+                "$and": [
+                    {"status": {"$in": relevant_statuses}},
+                    {
+                        "$or": [
+                            {"project_manager_id": current_user.id},
+                            {"stakeholders": current_user.id},
+                            {"created_by": current_user.id}
+                        ]
+                    }
+                ]
+            }
+        
+        projects_cursor = db.projects.find(base_query)
+        
+        projects = []
+        async for project_doc in projects_cursor:
+            project_doc["id"] = project_doc["_id"]
+            del project_doc["_id"]
+            projects.append(project_doc)
+        
+        return projects
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching projects by module: {str(e)}")
+
+@app.put("/api/projects/{project_id}/status")
+async def update_project_status(
+    project_id: str,
+    status_data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Update project status with workflow validation"""
+    try:
+        new_status = status_data.get("status")
+        if not new_status:
+            raise HTTPException(status_code=400, detail="Status is required")
+        
+        # Validate status transition workflow
+        valid_transitions = {
+            "initiation": ["planning", "cancelled"],
+            "planning": ["execution", "initiation", "cancelled"],
+            "execution": ["monitoring", "planning", "cancelled"],
+            "monitoring": ["closure", "execution", "cancelled"],
+            "closure": ["completed", "monitoring", "cancelled"],
+            "completed": [],  # Final state
+            "cancelled": ["initiation"]  # Can restart cancelled projects
+        }
+        
+        # Get current project
+        project_doc = await db.projects.find_one({"_id": project_id})
+        if not project_doc:
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        current_status = project_doc.get("status", "initiation")
+        
+        # Check if transition is valid
+        if new_status not in valid_transitions.get(current_status, []):
+            allowed = ", ".join(valid_transitions.get(current_status, []))
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid status transition from {current_status} to {new_status}. Allowed: {allowed}"
+            )
+        
+        # Update project status
+        result = await db.projects.update_one(
+            {"_id": project_id},
+            {
+                "$set": {
+                    "status": new_status,
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            }
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Project not found or not updated")
+        
+        return {"message": "Project status updated successfully", "new_status": new_status}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating project status: {str(e)}")
 
 @app.get("/api/projects/{project_id}", response_model=Project)
 async def get_project(project_id: str, current_user: User = Depends(get_current_user)):
