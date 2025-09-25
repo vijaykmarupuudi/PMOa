@@ -24,7 +24,7 @@ const PlanningIndex = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch('/api/projects', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/projects`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
